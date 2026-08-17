@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Despesas do Veículo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+
+    <!-- Estilo para o Dark Mode Global -->
+    <style>
+        .dark-mode { 
+            filter: invert(0.9) hue-rotate(180deg); 
+            background-color: #0b0f19;
+        }
+        .dark-mode canvas, 
+        .dark-mode img, 
+        .dark-mode #btnToggleDark,
+        .dark-mode #btnAtualizarCache { 
+            filter: invert(1) hue-rotate(180deg); 
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen p-4 md:p-8 flex flex-col justify-between">
+
+    <div class="max-w-5xl mx-auto w-full">
+        <!-- Cabeçalho com Seletor de Veículo e Data da Compra -->
+        <header class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                    <i class="fa-solid fa-car-side text-blue-600"></i> Gestão Automotiva
+                </h1>
+                <p class="text-xs text-slate-500 mt-1">Alterne entre os veículos para gerenciar despesas específicas.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Veículo Ativo</label>
+                    <select id="selectVeiculoAtivo" onchange="trocarVeiculoAtivo()" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50">
+                        <!-- Preenchido via JS -->
+                    </select>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Data da Compra</label>
+                    <div class="flex items-center gap-1.5">
+                        <input type="date" id="inputDataCompra" onchange="salvarDataCompra()" class="rounded-xl border border-slate-300 px-2 py-2 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 mt-5">
+                    <button onclick="abrirModalNovoVeiculo()" class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl transition text-sm shadow-sm" title="Adicionar Novo Veículo">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button onclick="limparDados()" class="text-xs text-red-500 hover:text-red-700 underline mb-1 ml-1" title="Resetar dados do carro atual">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Resetar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Grade Superior: Controle de Aquisição (Esquerda) e Progresso da Aquisição (Direita) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+            <!-- Card: Controle de Aquisição e Parcelamento (Ocupa 2 colunas) -->
+            <div class="lg:col-span-2 bg-gradient-to-r from-emerald-100/80 to-teal-50 p-5 rounded-2xl shadow-sm border border-emerald-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-200 text-emerald-800 flex items-center justify-center text-xl shadow-sm shrink-0">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wider text-emerald-800">Aquisição de Veículo</p>
+                                <h3 class="text-lg font-black text-slate-900">Controle de Entrada e Parcelas</h3>
+                                <p class="text-xs text-emerald-900 mt-0.5">Gerencie o valor total, a entrada e o cronograma.</p>
+                            </div>
+                        </div>
+                        <button onclick="abrirModalAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2.5 rounded-xl transition text-sm shadow-sm whitespace-nowrap self-end md:self-auto">
+                            <i class="fa-solid fa-gear mr-1"></i> Configurar
+                        </button>
+                    </div>
+
+                    <!-- Highlight da Próxima Parcela do Financiamento com Botão de Ação Rápida -->
+                    <div id="highlightProximaParcelaAquisicao" class="bg-white/90 border border-emerald-200 p-3.5 rounded-xl mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Próxima Parcela do Financiamento</p>
+                                <p id="textoProximaParcelaAquisicao" class="text-xs font-bold text-slate-800 mt-0.5">Nenhuma parcela pendente cadastrada.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-auto">
+                            <button id="btnMarcarPagaProxima" onclick="marcarProximaComoPaga()" class="hidden text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg transition shadow-sm whitespace-nowrap">
+                                <i class="fa-solid fa-check mr-1"></i> Paga
+                            </button>
+                            <span id="statusPrazoParcelaAquisicao" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap">Sem pendências</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumo da Aquisição -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-emerald-200/60 text-xs">
+                    <div class="bg-white/80 p-3 rounded-xl border border-emerald-100 flex flex-col justify-between">
+                        <span class="font-bold uppercase text-emerald-700">Valor Total</span>
+                        <span id="resumoValorTotal" class="text-sm font-black text-slate-900 mt-1">R$ 0,00</span>
+                    </div>
+                    <div class="bg-white/80 p-3 rounded-xl border border-emerald-100 flex flex-col justify-between">
+                        <span class="font-bold uppercase text-emerald-700">Entrada</span>
+                        <span id="resumoValorEntrada" class="text-sm font-black text-slate-900 mt-1">R$ 0,00</span>
+                    </div>
+                    <div class="bg-white/80 p-3 rounded-xl border border-emerald-100 flex flex-col justify-between">
+                        <span class="font-bold uppercase text-emerald-700">Parcelas Pagas</span>
+                        <span id="resumoStatusParcelas" class="text-sm font-black text-slate-900 mt-1">0 / 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico Dedicado à Aquisição / Financiamento (Lado Direito) -->
+            <div class="lg:col-span-1 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-car text-emerald-600"></i> Progresso da Aquisição
+                    </h2>
+                    <div class="relative w-full h-36 flex justify-center items-center">
+                        <canvas id="graficoAquisicaoCard"></canvas>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-slate-100">
+                    <div id="legendaAquisicaoCard" class="flex flex-col gap-1 text-xs"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Highlight: Próxima Revisão Prevista (Km + Data) -->
+        <div class="bg-gradient-to-r from-amber-100/80 to-amber-50 p-5 rounded-2xl shadow-sm border border-amber-200 mb-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div class="flex items-center gap-3 w-full lg:w-auto">
+                <div class="w-12 h-12 rounded-xl bg-amber-200 text-amber-800 flex items-center justify-center text-xl shadow-sm shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-amber-800">Próxima Revisão do Carro</p>
+                    <h3 class="text-base font-black text-slate-900">Controle por Quilometragem ou Data</h3>
+                    <p id="obsRevisao" class="text-xs font-semibold text-amber-900 mt-0.5">Calculando status da revisão...</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
+                <div class="flex flex-col w-full sm:w-auto">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-amber-800 mb-0.5">Meta Km</label>
+                    <input type="number" id="inputProximaRevisao" placeholder="Ex: 20000" class="rounded-xl border border-amber-300 px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white w-full sm:w-36 shadow-sm placeholder:text-slate-400">
+                </div>
+                <div class="flex flex-col w-full sm:w-auto">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-amber-800 mb-0.5">Data Limite</label>
+                    <input type="date" id="inputDataRevisao" class="rounded-xl border border-amber-300 px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white w-full sm:w-40 shadow-sm">
+                </div>
+                <button onclick="salvarProximaRevisao()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-4 py-2 rounded-xl transition text-sm shadow-sm whitespace-nowrap self-end sm:self-auto mt-auto">
+                    Salvar Meta
+                </button>
+            </div>
+        </div>
+
+        <!-- Card: Controle de Obrigações -->
+        <div class="bg-gradient-to-r from-indigo-100/80 to-blue-50 p-5 rounded-2xl shadow-sm border border-indigo-200 mb-4">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-200 text-indigo-800 flex items-center justify-center text-xl shadow-sm shrink-0">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-indigo-800">Controle de Obrigações</p>
+                        <h3 class="text-lg font-black text-slate-900">Vencimento de IPVA, Licenciamento, Seguro e CNHs</h3>
+                        <p class="text-xs text-indigo-900 mt-0.5">Defina as datas limites para evitar multas e atrasos.</p>
+                    </div>
+                </div>
+                <button onclick="salvarVencimentos()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2.5 rounded-xl transition text-sm shadow-sm whitespace-nowrap self-end md:self-auto">
+                    Salvar Datas
+                </button>
+            </div>
+
+            <!-- Primeira linha: Veículo com suporte a Parcelas -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-indigo-200/60">
+                <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold uppercase text-indigo-700">Vencimento IPVA</label>
+                            <button type="button" onclick="abrirModalParcelas('ipva', 'IPVA')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-2 py-0.5 rounded-md transition flex items-center gap-1">
+                                <i class="fa-solid fa-list-check"></i> Parcelas
+                            </button>
+                        </div>
+                        <input type="date" id="vencimentoIpva" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                    </div>
+                    <span id="statusIpva" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                </div>
+                <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold uppercase text-indigo-700">Vencimento Licenciamento</label>
+                            <button type="button" onclick="abrirModalParcelas('lic', 'Licenciamento')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-2 py-0.5 rounded-md transition flex items-center gap-1">
+                                <i class="fa-solid fa-list-check"></i> Parcelas
+                            </button>
+                        </div>
+                        <input type="date" id="vencimentoLicenciamento" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                    </div>
+                    <span id="statusLicenciamento" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                </div>
+                <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold uppercase text-indigo-700">Vencimento Seguro</label>
+                            <button type="button" onclick="abrirModalParcelas('seg', 'Seguro')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-2 py-0.5 rounded-md transition flex items-center gap-1">
+                                <i class="fa-solid fa-list-check"></i> Parcelas
+                            </button>
+                        </div>
+                        <input type="date" id="vencimentoSeguro" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                    </div>
+                    <span id="statusSeguro" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                </div>
+            </div>
+
+            <!-- Segunda linha separada por linha discreta: CNHs -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-indigo-200/40">
+                <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <label class="block text-[11px] font-bold uppercase text-indigo-700 mb-1">Vencimento CNH Andrey</label>
+                    <input type="date" id="vencimentoCnhAndrey" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                    <span id="statusCnhAndrey" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                </div>
+                <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <label class="block text-[11px] font-bold uppercase text-indigo-700 mb-1">Vencimento CNH Tiago</label>
+                    <input type="date" id="vencimentoCnhTiago" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                    <span id="statusCnhTiago" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards Resumo (4 Cards: Gasto Total, Última Quilometragem, Custo Médio / Km, Média Km / Litro) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-5 rounded-2xl shadow-sm border border-blue-100 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Gasto Total</span>
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <h3 id="totalGasto" class="text-2xl font-black text-slate-900">R$ 0,00</h3>
+            </div>
+            <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 p-5 rounded-2xl shadow-sm border border-emerald-100 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Última Quilometragem</span>
+                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shadow-sm">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                </div>
+                <h3 id="ultimaKm" class="text-2xl font-black text-slate-900">0 km</h3>
+            </div>
+            <div class="bg-gradient-to-br from-violet-50 to-purple-50/50 p-5 rounded-2xl shadow-sm border border-violet-100 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-violet-600">Custo Médio / Km</span>
+                    <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-sm shadow-sm">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                </div>
+                <h3 id="custoPorKm" class="text-2xl font-black text-slate-900">R$ 0,00</h3>
+            </div>
+            <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-5 rounded-2xl shadow-sm border border-amber-100 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Média Km / Litro</span>
+                    <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm shadow-sm">
+                        <i class="fa-solid fa-gas-pump"></i>
+                    </div>
+                </div>
+                <h3 id="kmPorLitro" class="text-2xl font-black text-slate-900">0,0 km/L</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 items-stretch">
+            <!-- Formulário Nova Despesa -->
+            <div class="md:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h2 id="formTitle" class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa
+                    </h2>
+                    <form id="expenseForm" onsubmit="salvarDespesa(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Data</label>
+                            <input type="date" id="data" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Categoria</label>
+                            <select id="categoria" onchange="verificarCategoriaAbastecimento()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="Abastecimento">Abastecimento</option>
+                                <option value="Aquisição de veículo">Aquisição de veículo</option>
+                                <option value="IPVA">IPVA</option>
+                                <option value="Licenciamento">Licenciamento</option>
+                                <option value="Seguro">Seguro</option>
+                                <option value="Revisão">Revisão</option>
+                                <option value="Multa">Multa</option>
+                                <option value="Acessórios">Acessórios</option>
+                                <option value="Lavagem">Lavagem</option>
+                                <option value="Sem Parar">Sem Parar</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div id="blocoKm">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Quilometragem (km)</label>
+                            <input type="number" id="km" placeholder="Ex: 15400" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Valor (R$)</label>
+                            <input type="number" step="0.01" id="valor" placeholder="0,00" oninput="calcularAbastecimento()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+
+                        <div id="camposAbastecimento" class="grid grid-cols-2 gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-blue-700 mb-1">Litros (Opcional)</label>
+                                <input type="number" step="0.001" id="litros" placeholder="Ex: 45.5" oninput="calcularAbastecimento()" class="w-full rounded-lg border border-blue-200 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-blue-700 mb-1">Preço / Litro (R$)</label>
+                                <input type="number" step="0.001" id="precoLitro" placeholder="Ex: 5.89" oninput="calcularAbastecimento()" class="w-full rounded-lg border border-blue-200 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Descrição</label>
+                            <input type="text" id="descricao" placeholder="Ex: Posto Ipiranga, Troca de óleo..." required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" id="btnSubmit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">
+                                Adicionar Registro
+                            </button>
+                            <button type="button" id="btnCancelarEdicao" onclick="cancelarEdicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-2.5 rounded-xl transition text-sm">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Coluna Direita: Gráficos -->
+            <div class="md:col-span-2 flex flex-col gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                        <h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-blue-600"></i> Total de Gastos por Mês
+                        </h2>
+                        <div class="flex items-center gap-2">
+                            <select id="filtroAno" onchange="atualizarInterface()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </select>
+                            <select id="filtroMes" onchange="atualizarInterface()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="Todos">Todos os Meses</option>
+                                <option value="01">Janeiro</option>
+                                <option value="02">Fevereiro</option>
+                                <option value="03">Março</option>
+                                <option value="04">Abril</option>
+                                <option value="05">Maio</option>
+                                <option value="06">Junho</option>
+                                <option value="07">Julho</option>
+                                <option value="08">Agosto</option>
+                                <option value="09">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-52 flex justify-center">
+                        <canvas id="graficoMensal"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Categorias com Legenda à Direita e Scroll -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <h2 class="text-base font-semibold text-slate-800 flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-chart-pie text-blue-600"></i> Gastos por Categoria
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                        <div class="relative w-full h-44 flex justify-center items-center">
+                            <canvas id="graficoCategorias"></canvas>
+                        </div>
+                        <div class="max-h-44 overflow-y-auto pr-2 border-l sm:border-l-slate-100 sm:pl-4">
+                            <div id="legendaLateral" class="flex flex-col gap-1.5 text-xs"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Histórico -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-blue-600"></i> Histórico de Lançamentos
+                </h2>
+                <div>
+                    <select id="filtroTabela" onchange="atualizarInterface()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-auto">
+                        <option value="Todas">Todas as Categorias</option>
+                        <option value="Abastecimento">Abastecimento</option>
+                        <option value="Aquisição de veículo">Aquisição de veículo</option>
+                        <option value="IPVA">IPVA</option>
+                        <option value="Licenciamento">Licenciamento</option>
+                        <option value="Seguro">Seguro</option>
+                        <option value="Revisão">Revisão</option>
+                        <option value="Multa">Multa</option>
+                        <option value="Acessórios">Acessórios</option>
+                        <option value="Lavagem">Lavagem</option>
+                        <option value="Sem Parar">Sem Parar</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-xs font-semibold text-slate-400 uppercase">
+                            <th class="pb-3">Data</th>
+                            <th class="pb-3">Categoria</th>
+                            <th class="pb-3">Descrição</th>
+                            <th class="pb-3">Km</th>
+                            <th class="pb-3 text-right">Valor</th>
+                            <th class="pb-3 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseTableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Inserido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="text-center py-12 text-slate-400 hidden">
+                <i class="fa-solid fa-folder-open text-3xl mb-2"></i>
+                <p class="text-sm">Nenhum registro encontrado.</p>
+            </div>
+        </div>
+
+        <!-- Rodapé com Botão Discreto de Atualizar Cache -->
+        <footer class="text-center pb-6">
+            <button id="btnAtualizarCache" onclick="atualizarCache()" class="text-xs text-slate-400 hover:text-slate-600 transition inline-flex items-center gap-1.5 py-1 px-3 rounded-lg hover:bg-slate-200/50">
+                <i class="fa-solid fa-rotate"></i> Atualizar Cache
+            </button>
+        </footer>
+    </div>
+
+    <!-- Modal Personalizado para Adicionar Novo Veículo -->
+    <div id="modalNovoVeiculo" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-car text-blue-600"></i> Adicionar Novo Veículo
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Modelo / Nome do Veículo</label>
+                    <input type="text" id="inputModalModelo" placeholder="Ex: Honda Civic" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Placa</label>
+                    <input type="text" id="inputModalPlaca" maxlength="8" placeholder="ABC-1234" oninput="formatarPlacaModal(this)" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="salvarNovoVeiculoModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">
+                        Cadastrar Veículo
+                    </button>
+                    <button type="button" onclick="fecharModalNovoVeiculo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2.5 rounded-xl transition text-sm">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configuração de Aquisição e Parcelas do Veículo -->
+    <div id="modalAquisicao" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-xl w-full p-6 border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="tituloModalAquisicao" class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Controle de Aquisição do Veículo
+                </h3>
+                <button onclick="fecharModalAquisicao()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Valor Total do Veículo (R$)</label>
+                    <input type="number" step="0.01" id="inputAquisicaoTotal" placeholder="0,00" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Valor da Entrada (R$)</label>
+                    <input type="number" step="0.01" id="inputAquisicaoEntrada" placeholder="0,00" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Data da Entrada</label>
+                <input type="date" id="inputAquisicaoDataEntrada" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white">
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 space-y-3">
+                <h4 id="tituloFormParcelaAquisicao" class="text-xs font-bold uppercase text-slate-700">Adicionar Parcela / Prestação</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nome / Nº Parcela</label>
+                        <input type="text" id="inputParcelaAquisicaoNome" placeholder="Ex: Parcela 1" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Vencimento</label>
+                        <input type="date" id="inputParcelaAquisicaoData" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Valor (R$)</label>
+                        <input type="number" step="0.01" id="inputParcelaAquisicaoValor" placeholder="0,00" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" id="btnSalvarParcelaAquisicao" onclick="adicionarOuAtualizarParcelaAquisicao()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm">
+                        <i class="fa-solid fa-plus mr-1"></i> Incluir Parcela na Lista
+                    </button>
+                    <button type="button" id="btnCancelarEdicaoParcelaAquisicao" onclick="cancelarEdicaoParcelaAquisicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-3 py-2 rounded-lg transition text-xs">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-h-48 overflow-y-auto mb-4 border border-slate-200 rounded-xl">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-semibold">
+                            <th class="p-2.5">Parcela</th>
+                            <th class="p-2.5">Vencimento</th>
+                            <th class="p-2.5">Valor</th>
+                            <th class="p-2.5 text-center">Status</th>
+                            <th class="p-2.5 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaParcelasAquisicaoCorpo" class="divide-y divide-slate-100">
+                        <!-- Inserido via JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyParcelasAquisicao" class="text-center py-4 text-slate-400 text-xs hidden">
+                Nenhuma parcela cadastrada.
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                <button type="button" onclick="salvarConfiguracaoAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-2.5 rounded-xl transition text-xs shadow-sm">
+                    Salvar e Concluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gerenciamento de Parcelas (IPVA/Licenciamento/Seguro) -->
+    <div id="modalParcelas" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 border border-slate-200">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="tituloModalParcelas" class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-indigo-600"></i> Gerenciar Parcelas
+                </h3>
+                <button onclick="fecharModalParcelas()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs text-slate-500 mb-4">Adicione as parcelas e vencimentos. A primeira parcela pendente ou mais próxima será refletida automaticamente no painel principal.</p>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 space-y-3">
+                <h4 class="text-xs font-bold uppercase text-slate-700">Adicionar Nova Parcela</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nome / Parcela</label>
+                        <input type="text" id="inputParcelaNome" placeholder="Ex: Parcela 1" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Vencimento</label>
+                        <input type="date" id="inputParcelaData" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Valor (R$) - Opcional</label>
+                        <input type="number" step="0.01" id="inputParcelaValor" placeholder="0,00" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                    </div>
+                </div>
+                <button type="button" onclick="adicionarParcelaModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm">
+                    <i class="fa-solid fa-plus mr-1"></i> Incluir Parcela
+                </button>
+            </div>
+
+            <div class="max-h-48 overflow-y-auto mb-4 border border-slate-200 rounded-xl">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-semibold">
+                            <th class="p-2.5">Parcela</th>
+                            <th class="p-2.5">Vencimento</th>
+                            <th class="p-2.5">Valor</th>
+                            <th class="p-2.5 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaParcelasCorpo" class="divide-y divide-slate-100">
+                        <!-- Inserido via JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyParcelas" class="text-center py-6 text-slate-400 text-xs hidden">
+                Nenhuma parcela cadastrada.
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                <button type="button" onclick="fecharModalParcelas()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2 rounded-xl transition text-xs shadow-sm">
+                    Concluir e Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão de Dark Mode -->
+    <button id="btnToggleDark" onclick="toggleDarkMode()" 
+        class="fixed bottom-6 right-6 p-4 bg-slate-800 text-white rounded-full shadow-lg hover:bg-slate-700 transition z-50">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <script>
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark-mode');
+            const isDark = html.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            const icon = document.querySelector('#btnToggleDark i');
+            icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark-mode');
+            document.querySelector('#btnToggleDark i').className = 'fa-solid fa-sun';
+        }
+
+        function atualizarCache() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        let veiculos = JSON.parse(localStorage.getItem('car_fleet')) || [
+            { id: 'veiculo_1', nome: 'Fiat Fastback (FUZ-2G43)' }
+        ];
+        let veiculoAtivoId = localStorage.getItem('car_active_id') || veiculos[0].id;
+
+        let todasDespesas = JSON.parse(localStorage.getItem('car_fleet_expenses')) || {
+            'veiculo_1': [
+                { id: 1723800000001, data: '2025-09-15', categoria: 'Abastecimento', descricao: 'Posto Inicial 2025', valor: 1500.00, km: 14000, litros: 0, precoLitro: 0 },
+                { id: 1723800000002, data: '2025-10-10', categoria: 'Lavagem', descricao: 'Lavagem Completa', valor: 120.00, km: 0 },
+                { id: 1723800000003, data: '2026-08-01', categoria: 'Abastecimento', descricao: 'Posto Shell - Gasolina', valor: 250.00, km: 15200, litros: 42.0, precoLitro: 5.95 },
+                { id: 1723800000004, data: '2026-08-10', categoria: 'Revisão', descricao: 'Troca de óleo e filtros', valor: 400.00, km: 0 },
+                { id: 1723800000005, data: '2026-08-15', categoria: 'Seguro', descricao: 'Parcela Seguro Auto', valor: 180.00, km: 0 }
+            ]
+        };
+
+        if (!localStorage.getItem(`car_aq_total_${veiculoAtivoId}`)) {
+            localStorage.setItem(`car_aq_total_${veiculoAtivoId}`, '100000');
+            localStorage.setItem(`car_aq_entrada_${veiculoAtivoId}`, '90000');
+            localStorage.setItem(`car_aq_data_entrada_${veiculoAtivoId}`, '2026-08-17');
+            const exemploParcelas = [
+                { id: 1, nome: 'Parcela 1', data: '2026-08-14', valor: 5000, pago: false },
+                { id: 2, nome: 'Parcela 2', data: '2026-09-14', valor: 5000, pago: false }
+            ];
+            localStorage.setItem(`car_parcelas_aquisicao_${veiculoAtivoId}`, JSON.stringify(exemploParcelas));
+        }
+
+        let tipoParcelaAtual = null;
+        let idEditandoParcelaAquisicao = null;
+        let idProximaParcelaPendente = null;
+
+        function getDespesasAtuais() {
+            if (!todasDespesas[veiculoAtivoId]) {
+                todasDespesas[veiculoAtivoId] = [];
+            }
+            return todasDespesas[veiculoAtivoId];
+        }
+
+        let meuGrafico = null;
+        let meuGraficoAquisicaoCard = null;
+        let meuGraficoMensal = null;
+        let idEditando = null;
+
+        const listaCategorias = ['Abastecimento', 'Aquisição de veículo', 'IPVA', 'Licenciamento', 'Seguro', 'Revisão', 'Multa', 'Acessórios', 'Lavagem', 'Sem Parar', 'Outros'];
+        
+        const coresCategorias = [
+            '#2563eb', '#1e1b4b', '#d97706', '#059669', '#7c3aed', '#dc2626', '#db2777', '#4f46e5', '#0d9488', '#0ea5e9', '#ca8a04'
+        ];
+
+        const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+        document.getElementById('data').valueAsDate = new Date('2026-08-17');
+
+        function verificarCategoriaAbastecimento() {
+            const categoria = document.getElementById('categoria').value;
+            const blocoKm = document.getElementById('blocoKm');
+            const inputKm = document.getElementById('km');
+            const containerAbastecimento = document.getElementById('camposAbastecimento');
+
+            if (categoria === 'Abastecimento') {
+                blocoKm.classList.remove('hidden');
+                inputKm.setAttribute('required', 'required');
+                containerAbastecimento.classList.remove('hidden');
+            } else {
+                blocoKm.classList.add('hidden');
+                inputKm.removeAttribute('required');
+                inputKm.value = '';
+                containerAbastecimento.classList.add('hidden');
+                document.getElementById('litros').value = '';
+                document.getElementById('precoLitro').value = '';
+            }
+        }
+
+        function calcularAbastecimento() {
+            const litrosInput = document.getElementById('litros');
+            const precoInput = document.getElementById('precoLitro');
+            const valorInput = document.getElementById('valor');
+
+            const litros = parseFloat(litrosInput.value);
+            const precoLitro = parseFloat(precoInput.value);
+            const valor = parseFloat(valorInput.value);
+
+            const activeId = document.activeElement ? document.activeElement.id : '';
+
+            if (activeId === 'valor' && !isNaN(valor) && !isNaN(precoLitro) && precoLitro > 0) {
+                litrosInput.value = (valor / precoLitro).toFixed(3);
+            } else if (activeId === 'litros' && !isNaN(litros) && !isNaN(precoLitro) && precoLitro > 0) {
+                valorInput.value = (litros * precoLitro).toFixed(2);
+            } else if (activeId === 'precoLitro') {
+                if (!isNaN(valor) && isNaN(litros) && precoLitro > 0) {
+                    litrosInput.value = (valor / precoLitro).toFixed(3);
+                } else if (!isNaN(litros) && precoLitro > 0) {
+                    valorInput.value = (litros * precoLitro).toFixed(2);
+                }
+            }
+        }
+
+        function popularSeletorVeiculos() {
+            const select = document.getElementById('selectVeiculoAtivo');
+            select.innerHTML = '';
+            veiculos.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.id;
+                opt.textContent = v.nome;
+                if (v.id === veiculoAtivoId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function trocarVeiculoAtivo() {
+            const select = document.getElementById('selectVeiculoAtivo');
+            veiculoAtivoId = select.value;
+            localStorage.setItem('car_active_id', veiculoAtivoId);
+            
+            cancelarEdicao();
+            carregarConfiguracoesVeiculo();
+            popularFiltroAnos();
+            atualizarInterface();
+        }
+
+        function abrirModalNovoVeiculo() {
+            document.getElementById('inputModalModelo').value = '';
+            document.getElementById('inputModalPlaca').value = '';
+            document.getElementById('modalNovoVeiculo').classList.remove('hidden');
+            document.getElementById('inputModalModelo').focus();
+        }
+
+        function fecharModalNovoVeiculo() {
+            document.getElementById('modalNovoVeiculo').classList.add('hidden');
+        }
+
+        function abrirModalAquisicao() {
+            document.getElementById('inputAquisicaoTotal').value = localStorage.getItem(`car_aq_total_${veiculoAtivoId}`) || '';
+            document.getElementById('inputAquisicaoEntrada').value = localStorage.getItem(`car_aq_entrada_${veiculoAtivoId}`) || '';
+            document.getElementById('inputAquisicaoDataEntrada').value = localStorage.getItem(`car_aq_data_entrada_${veiculoAtivoId}`) || '';
+            cancelarEdicaoParcelaAquisicao();
+
+            renderizarTabelaParcelasAquisicao();
+            document.getElementById('modalAquisicao').classList.remove('hidden');
+        }
+
+        function fecharModalAquisicao() {
+            document.getElementById('modalAquisicao').classList.add('hidden');
+            atualizarResumoAquisicao();
+            atualizarGraficoAquisicaoCard();
+        }
+
+        function getParcelasAquisicaoKey() {
+            return `car_parcelas_aquisicao_${veiculoAtivoId}`;
+        }
+
+        function obterParcelasAquisicaoAtuais() {
+            return JSON.parse(localStorage.getItem(getParcelasAquisicaoKey())) || [];
+        }
+
+        function salvarParcelasAquisicaoAtuais(parcelas) {
+            localStorage.setItem(getParcelasAquisicaoKey(), JSON.stringify(parcelas));
+        }
+
+        function adicionarOuAtualizarParcelaAquisicao() {
+            const nome = document.getElementById('inputParcelaAquisicaoNome').value.trim();
+            const data = document.getElementById('inputParcelaAquisicaoData').value;
+            const valor = parseFloat(document.getElementById('inputParcelaAquisicaoValor').value) || 0;
+
+            if (!nome || !data || valor <= 0) {
+                alert("Informe o nome/número da parcela, a data de vencimento e um valor válido.");
+                return;
+            }
+
+            let parcelas = obterParcelasAquisicaoAtuais();
+
+            if (idEditandoParcelaAquisicao !== null) {
+                const p = parcelas.find(item => item.id === idEditandoParcelaAquisicao);
+                if (p) {
+                    p.nome = nome;
+                    p.data = data;
+                    p.valor = valor;
+                }
+                cancelarEdicaoParcelaAquisicao();
+            } else {
+                parcelas.push({ id: Date.now(), nome, data, valor, pago: false });
+            }
+
+            parcelas.sort((a, b) => new Date(a.data) - new Date(b.data));
+            salvarParcelasAquisicaoAtuais(parcelas);
+
+            document.getElementById('inputParcelaAquisicaoNome').value = '';
+            document.getElementById('inputParcelaAquisicaoData').value = '';
+            document.getElementById('inputParcelaAquisicaoValor').value = '';
+            document.getElementById('inputParcelaAquisicaoNome').focus();
+
+            renderizarTabelaParcelasAquisicao();
+        }
+
+        function carregarEdicaoParcelaAquisicao(id) {
+            let parcelas = obterParcelasAquisicaoAtuais();
+            const p = parcelas.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('inputParcelaAquisicaoNome').value = p.nome;
+            document.getElementById('inputParcelaAquisicaoData').value = p.data;
+            document.getElementById('inputParcelaAquisicaoValor').value = p.valor;
+
+            idEditandoParcelaAquisicao = id;
+            document.getElementById('tituloFormParcelaAquisicao').innerText = "Editar Parcela / Prestação";
+            document.getElementById('btnSalvarParcelaAquisicao').innerHTML = '<i class="fa-solid fa-pen mr-1"></i> Salvar Alteração';
+            document.getElementById('btnSalvarParcelaAquisicao').className = "flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm";
+            document.getElementById('btnCancelarEdicaoParcelaAquisicao').classList.remove('hidden');
+        }
+
+        function cancelarEdicaoParcelaAquisicao() {
+            idEditandoParcelaAquisicao = null;
+            document.getElementById('inputParcelaAquisicaoNome').value = '';
+            document.getElementById('inputParcelaAquisicaoData').value = '';
+            document.getElementById('inputParcelaAquisicaoValor').value = '';
+            document.getElementById('tituloFormParcelaAquisicao').innerText = "Adicionar Parcela / Prestação";
+            document.getElementById('btnSalvarParcelaAquisicao').innerHTML = '<i class="fa-solid fa-plus mr-1"></i> Incluir Parcela na Lista';
+            document.getElementById('btnSalvarParcelaAquisicao').className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm";
+            document.getElementById('btnCancelarEdicaoParcelaAquisicao').classList.add('hidden');
+        }
+
+        function togglePagoParcelaAquisicao(id) {
+            let parcelas = obterParcelasAquisicaoAtuais();
+            const p = parcelas.find(item => item.id === id);
+            if (p) {
+                p.pago = !p.pago;
+                salvarParcelasAquisicaoAtuais(parcelas);
+                atualizarResumoAquisicao();
+                atualizarGraficoAquisicaoCard();
+                if (document.getElementById('modalAquisicao').classList.contains('hidden') === false) {
+                    renderizarTabelaParcelasAquisicao();
+                }
+            }
+        }
+
+        function marcarProximaComoPaga() {
+            if (idProximaParcelaPendente !== null) {
+                togglePagoParcelaAquisicao(idProximaParcelaPendente);
+            }
+        }
+
+        function excluirParcelaAquisicaoModal(id) {
+            if (id === idEditandoParcelaAquisicao) {
+                cancelarEdicaoParcelaAquisicao();
+            }
+            let parcelas = obterParcelasAquisicaoAtuais();
+            parcelas = parcelas.filter(p => p.id !== id);
+            salvarParcelasAquisicaoAtuais(parcelas);
+            renderizarTabelaParcelasAquisicao();
+        }
+
+        function renderizarTabelaParcelasAquisicao() {
+            const tbody = document.getElementById('tabelaParcelasAquisicaoCorpo');
+            const emptyEl = document.getElementById('emptyParcelasAquisicao');
+            tbody.innerHTML = '';
+
+            let parcelas = obterParcelasAquisicaoAtuais();
+
+            if (parcelas.length === 0) {
+                emptyEl.classList.remove('hidden');
+                return;
+            } else {
+                emptyEl.classList.add('hidden');
+            }
+
+            parcelas.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-medium text-slate-800">${p.nome}</td>
+                    <td class="p-2.5 text-slate-600">${formatarDataSimples(p.data)}</td>
+                    <td class="p-2.5 text-slate-600">${formatarMoeda(p.valor)}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="togglePagoParcelaAquisicao(${p.id})" class="px-2 py-1 rounded text-[10px] font-bold ${p.pago ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                            ${p.pago ? 'Pago' : 'Pendente'}
+                        </button>
+                    </td>
+                    <td class="p-2.5 text-center whitespace-nowrap">
+                        <button onclick="carregarEdicaoParcelaAquisicao(${p.id})" class="text-slate-400 hover:text-amber-600 p-1 mr-1" title="Editar Parcela">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="excluirParcelaAquisicaoModal(${p.id})" class="text-slate-400 hover:text-red-600 p-1" title="Excluir Parcela">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function salvarConfiguracaoAquisicao() {
+            const total = parseFloat(document.getElementById('inputAquisicaoTotal').value) || 0;
+            const entrada = parseFloat(document.getElementById('inputAquisicaoEntrada').value) || 0;
+            const dataEntrada = document.getElementById('inputAquisicaoDataEntrada').value;
+
+            localStorage.setItem(`car_aq_total_${veiculoAtivoId}`, total);
+            localStorage.setItem(`car_aq_entrada_${veiculoAtivoId}`, entrada);
+            localStorage.setItem(`car_aq_data_entrada_${veiculoAtivoId}`, dataEntrada);
+
+            if (entrada > 0 && dataEntrada) {
+                let despesas = getDespesasAtuais();
+                let indexEntrada = despesas.findIndex(d => d.categoria === 'Aquisição de veículo' && d.descricao.toLowerCase().includes('entrada'));
+                if (indexEntrada !== -1) {
+                    despesas[indexEntrada].valor = entrada;
+                    despesas[indexEntrada].data = dataEntrada;
+                } else {
+                    despesas.push({
+                        id: Date.now(),
+                        data: dataEntrada,
+                        categoria: 'Aquisição de veículo',
+                        descricao: 'Entrada Veículo',
+                        valor: entrada,
+                        km: 0,
+                        litros: 0,
+                        precoLitro: 0
+                    });
+                }
+                salvarNoLocalStorage();
+            }
+
+            fecharModalAquisicao();
+            atualizarInterface();
+            alert('Configuração de aquisição salva com sucesso!');
+        }
+
+        function atualizarResumoAquisicao() {
+            const total = parseFloat(localStorage.getItem(`car_aq_total_${veiculoAtivoId}`)) || 0;
+            const entrada = parseFloat(localStorage.getItem(`car_aq_entrada_${veiculoAtivoId}`)) || 0;
+            let parcelas = obterParcelasAquisicaoAtuais();
+
+            let pagas = parcelas.filter(p => p.pago).length;
+            let totalParcelas = parcelas.length;
+
+            document.getElementById('resumoValorTotal').innerText = formatarMoeda(total);
+            document.getElementById('resumoValorEntrada').innerText = formatarMoeda(entrada);
+            document.getElementById('resumoStatusParcelas').innerText = `${pagas} / ${totalParcelas}`;
+
+            const textoEl = document.getElementById('textoProximaParcelaAquisicao');
+            const statusBadgeEl = document.getElementById('statusPrazoParcelaAquisicao');
+            const btnMarcarPaga = document.getElementById('btnMarcarPagaProxima');
+
+            let pendentes = parcelas.filter(p => !p.pago);
+            if (pendentes.length === 0) {
+                idProximaParcelaPendente = null;
+                btnMarcarPaga.classList.add('hidden');
+                if (totalParcelas === 0) {
+                    textoEl.innerText = "Nenhuma parcela cadastrada.";
+                    statusBadgeEl.innerText = "Sem parcelas";
+                    statusBadgeEl.className = "text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap";
+                } else {
+                    textoEl.innerText = "Todas as parcelas foram quitadas!";
+                    statusBadgeEl.innerText = "Quitado";
+                    statusBadgeEl.className = "text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 whitespace-nowrap";
+                }
+            } else {
+                pendentes.sort((a, b) => new Date(a.data) - new Date(b.data));
+                let proxima = pendentes[0];
+                idProximaParcelaPendente = proxima.id;
+                let statusInfo = calcularStatusDias(proxima.data);
+
+                textoEl.innerHTML = `<strong>${proxima.nome}</strong> (${formatarMoeda(proxima.valor)}) — Vencimento em <strong>${formatarDataSimples(proxima.data)}</strong>`;
+                statusBadgeEl.innerText = statusInfo.textoCurto;
+                statusBadgeEl.className = `text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap ${statusInfo.classeBadge}`;
+                btnMarcarPaga.classList.remove('hidden');
+            }
+        }
+
+        function abrirModalParcelas(tipo, titulo) {
+            tipoParcelaAtual = tipo;
+            document.getElementById('tituloModalParcelas').innerHTML = `<i class="fa-solid fa-list-check text-indigo-600"></i> Parcelas de ${titulo}`;
+            document.getElementById('inputParcelaNome').value = '';
+            document.getElementById('inputParcelaData').value = '';
+            document.getElementById('inputParcelaValor').value = '';
+            
+            renderizarTabelaParcelas();
+            document.getElementById('modalParcelas').classList.remove('hidden');
+        }
+
+        function fecharModalParcelas() {
+            document.getElementById('modalParcelas').classList.add('hidden');
+            atualizarDataPrincipalPorParcelas();
+            verificarStatusVencimentos();
+        }
+
+        function getParcelasKey() {
+            return `car_parcelas_${tipoParcelaAtual}_${veiculoAtivoId}`;
+        }
+
+        function obterParcelasAtuais() {
+            return JSON.parse(localStorage.getItem(getParcelasKey())) || [];
+        }
+
+        function salvarParcelasAtuais(parcelas) {
+            localStorage.setItem(getParcelasKey(), JSON.stringify(parcelas));
+        }
+
+        function adicionarParcelaModal() {
+            const nome = document.getElementById('inputParcelaNome').value.trim();
+            const data = document.getElementById('inputParcelaData').value;
+            const valor = parseFloat(document.getElementById('inputParcelaValor').value) || 0;
+
+            if (!nome || !data) {
+                alert("Informe o nome/número da parcela e a data de vencimento.");
+                return;
+            }
+
+            let parcelas = obterParcelasAtuais();
+            parcelas.push({ id: Date.now(), nome, data, valor });
+            parcelas.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+            salvarParcelasAtuais(parcelas);
+
+            document.getElementById('inputParcelaNome').value = '';
+            document.getElementById('inputParcelaData').value = '';
+            document.getElementById('inputParcelaValor').value = '';
+            document.getElementById('inputParcelaNome').focus();
+
+            renderizarTabelaParcelas();
+        }
+
+        function excluirParcelaModal(id) {
+            let parcelas = obterParcelasAtuais();
+            parcelas = parcelas.filter(p => p.id !== id);
+            salvarParcelasAtuais(parcelas);
+            renderizarTabelaParcelas();
+        }
+
+        function renderizarTabelaParcelas() {
+            const tbody = document.getElementById('tabelaParcelasCorpo');
+            const emptyEl = document.getElementById('emptyParcelas');
+            tbody.innerHTML = '';
+
+            let parcelas = obterParcelasAtuais();
+
+            if (parcelas.length === 0) {
+                emptyEl.classList.remove('hidden');
+                return;
+            } else {
+                emptyEl.classList.add('hidden');
+            }
+
+            parcelas.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-medium text-slate-800">${p.nome}</td>
+                    <td class="p-2.5 text-slate-600">${formatarDataSimples(p.data)}</td>
+                    <td class="p-2.5 text-slate-600">${p.valor > 0 ? formatarMoeda(p.valor) : '-'}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="excluirParcelaModal(${p.id})" class="text-slate-400 hover:text-red-600 p-1" title="Excluir Parcela">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function atualizarDataPrincipalPorParcelas() {
+            ['ipva', 'lic', 'seg'].forEach(tipo => {
+                let parcelas = JSON.parse(localStorage.getItem(`car_parcelas_${tipo}_${veiculoAtivoId}`)) || [];
+                if (parcelas.length > 0) {
+                    const hoje = new Date('2026-08-17');
+                    hoje.setHours(0,0,0,0);
+
+                    parcelas.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+                    let proxima = parcelas.find(p => {
+                        const partes = p.data.split('-');
+                        const d = new Date(partes[0], partes[1]-1, partes[2]);
+                        return d >= hoje;
+                    });
+
+                    if (!proxima) {
+                        proxima = parcelas[0];
+                    }
+
+                    const inputId = tipo === 'ipva' ? 'vencimentoIpva' : (tipo === 'lic' ? 'vencimentoLicenciamento' : 'vencimentoSeguro');
+                    document.getElementById(inputId).value = proxima.data;
+                    localStorage.setItem(`car_venc_${tipo}_${veiculoAtivoId}`, proxima.data);
+                }
+            });
+        }
+
+        function formatarPlacaModal(input) {
+            let v = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (v.length > 3) {
+                v = v.slice(0, 3) + '-' + v.slice(3, 7);
+            }
+            input.value = v;
+        }
+
+        function salvarNovoVeiculoModal() {
+            const modelo = document.getElementById('inputModalModelo').value.trim();
+            const placa = document.getElementById('inputModalPlaca').value.trim();
+
+            if (!modelo) {
+                alert("Por favor, informe o modelo ou nome do veículo.");
+                document.getElementById('inputModalModelo').focus();
+                return;
+            }
+
+            const nomeFormatado = placa ? `${modelo} (${placa})` : modelo;
+
+            const novoId = 'veiculo_' + Date.now();
+            veiculos.push({ id: novoId, nome: nomeFormatado });
+            todasDespesas[novoId] = [];
+
+            localStorage.setItem('car_fleet', JSON.stringify(veiculos));
+            localStorage.setItem('car_fleet_expenses', JSON.stringify(todasDespesas));
+
+            veiculoAtivoId = novoId;
+            localStorage.setItem('car_active_id', veiculoAtivoId);
+
+            fecharModalNovoVeiculo();
+            popularSeletorVeiculos();
+            carregarConfiguracoesVeiculo();
+            popularFiltroAnos();
+            atualizarInterface();
+        }
+
+        function carregarConfiguracoesVeiculo() {
+            const proximaRevisaoSalva = localStorage.getItem(`car_next_service_${veiculoAtivoId}`) || '';
+            document.getElementById('inputProximaRevisao').value = proximaRevisaoSalva;
+
+            const dataRevisaoSalva = localStorage.getItem(`car_next_service_date_${veiculoAtivoId}`) || '';
+            document.getElementById('inputDataRevisao').value = dataRevisaoSalva;
+
+            const dataCompraSalva = localStorage.getItem(`car_purchase_date_${veiculoAtivoId}`) || '';
+            document.getElementById('inputDataCompra').value = dataCompraSalva;
+
+            document.getElementById('vencimentoIpva').value = localStorage.getItem(`car_venc_ipva_${veiculoAtivoId}`) || '';
+            document.getElementById('vencimentoLicenciamento').value = localStorage.getItem(`car_venc_lic_${veiculoAtivoId}`) || '';
+            document.getElementById('vencimentoSeguro').value = localStorage.getItem(`car_venc_seg_${veiculoAtivoId}`) || '';
+            document.getElementById('vencimentoCnhAndrey').value = localStorage.getItem(`car_venc_cnh_andrey_${veiculoAtivoId}`) || '';
+            document.getElementById('vencimentoCnhTiago').value = localStorage.getItem(`car_venc_cnh_tiago_${veiculoAtivoId}`) || '';
+            
+            atualizarDataPrincipalPorParcelas();
+            verificarStatusVencimentos();
+            atualizarResumoAquisicao();
+        }
+
+        function salvarDataCompra() {
+            const dataCompra = document.getElementById('inputDataCompra').value;
+            localStorage.setItem(`car_purchase_date_${veiculoAtivoId}`, dataCompra);
+        }
+
+        function salvarProximaRevisao() {
+            const valorKm = document.getElementById('inputProximaRevisao').value;
+            const dataRevisao = document.getElementById('inputDataRevisao').value;
+
+            localStorage.setItem(`car_next_service_${veiculoAtivoId}`, valorKm);
+            localStorage.setItem(`car_next_service_date_${veiculoAtivoId}`, dataRevisao);
+
+            atualizarContadorRevisao();
+            alert('Metas de revisão (Quilometragem e Data) salvas com sucesso!');
+        }
+
+        function salvarVencimentos() {
+            const ipva = document.getElementById('vencimentoIpva').value;
+            const licenciamento = document.getElementById('vencimentoLicenciamento').value;
+            const seguro = document.getElementById('vencimentoSeguro').value;
+            const cnhAndrey = document.getElementById('vencimentoCnhAndrey').value;
+            const cnhTiago = document.getElementById('vencimentoCnhTiago').value;
+
+            localStorage.setItem(`car_venc_ipva_${veiculoAtivoId}`, ipva);
+            localStorage.setItem(`car_venc_lic_${veiculoAtivoId}`, licenciamento);
+            localStorage.setItem(`car_venc_seg_${veiculoAtivoId}`, seguro);
+            localStorage.setItem(`car_venc_cnh_andrey_${veiculoAtivoId}`, cnhAndrey);
+            localStorage.setItem(`car_venc_cnh_tiago_${veiculoAtivoId}`, cnhTiago);
+
+            verificarStatusVencimentos();
+            alert('Datas de vencimento salvas com sucesso!');
+        }
+
+        function formatarDataSimples(dataIso) {
+            if (!dataIso) return '';
+            const [ano, mes, dia] = dataIso.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function calcularStatusDias(dataIso) {
+            if (!dataIso) return { texto: 'Não informado', textoCurto: 'Não informado', classe: 'text-slate-400', classeBadge: 'bg-slate-100 text-slate-600' };
+            
+            const hoje = new Date('2026-08-17');
+            hoje.setHours(0, 0, 0, 0);
+            
+            const partes = dataIso.split('-');
+            const dataVenc = new Date(partes[0], partes[1] - 1, partes[2]);
+            dataVenc.setHours(0, 0, 0, 0);
+
+            const diffTime = dataVenc - hoje;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            const dataFormatada = formatarDataSimples(dataIso);
+
+            if (diffDays < 0) {
+                return { 
+                    texto: `Vencido em ${dataFormatada} (${Math.abs(diffDays)} dias atrás)`, 
+                    textoCurto: `Vencido há ${Math.abs(diffDays)}d`, 
+                    classe: 'text-red-600', 
+                    classeBadge: 'bg-red-100 text-red-700' 
+                };
+            } else if (diffDays === 0) {
+                return { 
+                    texto: `Vence HOJE (${dataFormatada})!`, 
+                    textoCurto: 'Vence HOJE!', 
+                    classe: 'text-red-600 font-bold', 
+                    classeBadge: 'bg-red-100 text-red-700 font-bold animate-pulse' 
+                };
+            } else if (diffDays <= 30) {
+                return { 
+                    texto: `Vence em ${diffDays} dias (${dataFormatada})`, 
+                    textoCurto: `Vence em ${diffDays}d`, 
+                    classe: 'text-amber-600 font-bold', 
+                    classeBadge: 'bg-amber-100 text-amber-800' 
+                };
+            } else {
+                return { 
+                    texto: `Vence em ${dataFormatada} (${diffDays} dias)`, 
+                    textoCurto: `Faltam ${diffDays}d`, 
+                    classe: 'text-emerald-600', 
+                    classeBadge: 'bg-emerald-100 text-emerald-800' 
+                };
+            }
+        }
+
+        function verificarStatusVencimentos() {
+            const ipvaVal = document.getElementById('vencimentoIpva').value;
+            const licVal = document.getElementById('vencimentoLicenciamento').value;
+            const segVal = document.getElementById('vencimentoSeguro').value;
+            const cnhAndreyVal = document.getElementById('vencimentoCnhAndrey').value;
+            const cnhTiagoVal = document.getElementById('vencimentoCnhTiago').value;
+
+            const resIpva = calcularStatusDias(ipvaVal);
+            const elIpva = document.getElementById('statusIpva');
+            elIpva.innerText = resIpva.texto;
+            elIpva.className = `text-[10px] font-bold mt-1 ${resIpva.classe}`;
+
+            const resLic = calcularStatusDias(licVal);
+            const elLic = document.getElementById('statusLicenciamento');
+            elLic.innerText = resLic.texto;
+            elLic.className = `text-[10px] font-bold mt-1 ${resLic.classe}`;
+
+            const resSeg = calcularStatusDias(segVal);
+            const elSeg = document.getElementById('statusSeguro');
+            elSeg.innerText = resSeg.texto;
+            elSeg.className = `text-[10px] font-bold mt-1 ${resSeg.classe}`;
+
+            const resCnhAndrey = calcularStatusDias(cnhAndreyVal);
+            const elCnhAndrey = document.getElementById('statusCnhAndrey');
+            elCnhAndrey.innerText = resCnhAndrey.texto;
+            elCnhAndrey.className = `text-[10px] font-bold mt-1 ${resCnhAndrey.classe}`;
+
+            const resCnhTiago = calcularStatusDias(cnhTiagoVal);
+            const elCnhTiago = document.getElementById('statusCnhTiago');
+            elCnhTiago.innerText = resCnhTiago.texto;
+            elCnhTiago.className = `text-[10px] font-bold mt-1 ${resCnhTiago.classe}`;
+        }
+
+        function atualizarContadorRevisao() {
+            const metaKmInput = document.getElementById('inputProximaRevisao').value;
+            const dataLimiteInput = document.getElementById('inputDataRevisao').value;
+            const obsEl = document.getElementById('obsRevisao');
+            
+            let despesas = getDespesasAtuais();
+            let maiorKm = 0;
+            despesas.forEach(d => {
+                if (d.km > maiorKm) maiorKm = d.km;
+            });
+
+            let statusKm = null;
+            let statusData = null;
+
+            if (metaKmInput) {
+                const meta = parseInt(metaKmInput);
+                const diffKm = meta - maiorKm;
+                statusKm = { diff: diffKm, meta: meta };
+            }
+
+            if (dataLimiteInput) {
+                const hoje = new Date('2026-08-17');
+                hoje.setHours(0, 0, 0, 0);
+                const partes = dataLimiteInput.split('-');
+                const dataVenc = new Date(partes[0], partes[1] - 1, partes[2]);
+                dataVenc.setHours(0, 0, 0, 0);
+                const diffTime = dataVenc - hoje;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                statusData = { days: diffDays, dataStr: formatarDataSimples(dataLimiteInput) };
+            }
+
+            if (!statusKm && !statusData) {
+                obsEl.innerText = "Defina quilometragem e/ou data limite para a revisão.";
+                return;
+            }
+
+            let mensagem = "";
+            if (statusKm && statusData) {
+                let kmUrgente = statusKm.diff <= 0;
+                let dataUrgente = statusData.days <= 0;
+
+                if (kmUrgente || dataUrgente) {
+                    if (kmUrgente && dataUrgente) {
+                        mensagem = `Atenção: A meta de km (${statusKm.meta.toLocaleString()} km) e a data (${statusData.dataStr}) já foram atingidas ou vencidas!`;
+                    } else if (kmUrgente) {
+                        mensagem = `Atenção: Quilometragem da revisão atingida (${maiorKm.toLocaleString()} / ${statusKm.meta.toLocaleString()} km)!`;
+                    } else {
+                        mensagem = `Atenção: Data limite da revisão atingida (${statusData.dataStr})!`;
+                    }
+                } else {
+                    mensagem = `Faltam ${statusKm.diff.toLocaleString('pt-BR')} km (Meta: ${statusKm.meta.toLocaleString()} km) ou até ${statusData.dataStr} (${statusData.days} dias). O que ocorrer primeiro.`;
+                }
+            } else if (statusKm) {
+                if (statusKm.diff > 0) {
+                    mensagem = `Faltam ${statusKm.diff.toLocaleString('pt-BR')} km com base na última quilometragem (${maiorKm.toLocaleString('pt-BR')} km).`;
+                } else if (statusKm.diff === 0) {
+                    mensagem = `O veículo atingiu exatamente a quilometragem da revisão (${maiorKm.toLocaleString('pt-BR')} km)!`;
+                } else {
+                    mensagem = `A meta de revisão por km já foi ultrapassada em ${Math.abs(statusKm.diff).toLocaleString('pt-BR')} km!`;
+                }
+            } else if (statusData) {
+                if (statusData.days < 0) {
+                    mensagem = `Data limite de revisão vencida em ${statusData.dataStr} (${Math.abs(statusData.days)} dias atrás)!`;
+                } else if (statusData.days === 0) {
+                    mensagem = `A revisão vence HOJE (${statusData.dataStr})!`;
+                } else {
+                    mensagem = `Faltam ${statusData.days} dias para a data limite (${statusData.dataStr}).`;
+                }
+            }
+
+            obsEl.innerText = mensagem;
+        }
+
+        function salvarNoLocalStorage() {
+            localStorage.setItem('car_fleet_expenses', JSON.stringify(todasDespesas));
+        }
+
+        function popularFiltroAnos() {
+            const selectAno = document.getElementById('filtroAno');
+            const anoAtual = new Date('2026-08-17').getFullYear();
+            let despesas = getDespesasAtuais();
+            
+            let anosDisponiveis = new Set();
+            anosDisponiveis.add(anoAtual.toString());
+            despesas.forEach(d => {
+                if (d.data) {
+                    const ano = d.data.split('-')[0];
+                    if (ano) anosDisponiveis.add(ano);
+                }
+            });
+
+            const anosOrdenados = Array.from(anosDisponiveis).sort((a, b) => b - a);
+            const anoSelecionadoAtual = selectAno.value;
+
+            selectAno.innerHTML = '';
+            anosOrdenados.forEach(ano => {
+                const opt = document.createElement('option');
+                opt.value = ano;
+                opt.textContent = `Ano: ${ano}`;
+                selectAno.appendChild(opt);
+            });
+
+            if (anosOrdenados.includes(anoSelecionadoAtual)) {
+                selectAno.value = anoSelecionadoAtual;
+            }
+        }
+
+        function salvarDespesa(event) {
+            event.preventDefault();
+
+            const data = document.getElementById('data').value;
+            const categoria = document.getElementById('categoria').value;
+            const descricao = document.getElementById('descricao').value;
+            const valor = parseFloat(document.getElementById('valor').value);
+            
+            let despesas = getDespesasAtuais();
+            
+            const km = categoria === 'Abastecimento' ? parseInt(document.getElementById('km').value) || 0 : 0;
+            
+            let litros = 0;
+            let precoLitro = 0;
+
+            if (categoria === 'Abastecimento') {
+                litros = parseFloat(document.getElementById('litros').value) || 0;
+                precoLitro = parseFloat(document.getElementById('precoLitro').value) || 0;
+            }
+
+            if (idEditando !== null) {
+                const index = despesas.findIndex(d => d.id === idEditando);
+                if (index !== -1) {
+                    despesas[index] = { id: idEditando, data, categoria, descricao, valor, km, litros, precoLitro };
+                }
+                idEditando = null;
+                document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa';
+                document.getElementById('btnSubmit').innerText = 'Adicionar Registro';
+                document.getElementById('btnCancelarEdicao').classList.add('hidden');
+            } else {
+                const novaDespesa = {
+                    id: Date.now(),
+                    data,
+                    categoria,
+                    descricao,
+                    valor,
+                    km,
+                    litros,
+                    precoLitro
+                };
+                despesas.push(novaDespesa);
+            }
+
+            despesas.sort((a, b) => new Date(b.data) - new Date(a.data));
+            salvarNoLocalStorage();
+            popularFiltroAnos();
+            atualizarInterface();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('data').valueAsDate = new Date('2026-08-17');
+            verificarCategoriaAbastecimento();
+        }
+
+        function carregarEdicao(id) {
+            let despesas = getDespesasAtuais();
+            const despesa = despesas.find(d => d.id === id);
+            if (!despesa) return;
+
+            document.getElementById('data').value = despesa.data;
+            document.getElementById('categoria').value = despesa.categoria;
+            verificarCategoriaAbastecimento();
+
+            if (despesa.categoria === 'Abastecimento') {
+                document.getElementById('km').value = despesa.km || '';
+                document.getElementById('litros').value = despesa.litros || '';
+                document.getElementById('precoLitro').value = despesa.precoLitro || '';
+            }
+
+            document.getElementById('descricao').value = despesa.descricao;
+            document.getElementById('valor').value = despesa.valor;
+
+            idEditando = id;
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-600"></i> Editar Despesa';
+            document.getElementById('btnSubmit').innerText = 'Salvar Alteração';
+            document.getElementById('btnCancelarEdicao').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicao() {
+            idEditando = null;
+            document.getElementById('expenseForm').reset();
+            document.getElementById('data').valueAsDate = new Date('2026-08-17');
+            verificarCategoriaAbastecimento();
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa';
+            document.getElementById('btnSubmit').innerText = 'Adicionar Registro';
+            document.getElementById('btnCancelarEdicao').classList.add('hidden');
+        }
+
+        function excluirDespesa(id) {
+            if (id === idEditando) {
+                cancelarEdicao();
+            }
+            let despesas = getDespesasAtuais();
+            todasDespesas[veiculoAtivoId] = despesas.filter(d => d.id !== id);
+            salvarNoLocalStorage();
+            popularFiltroAnos();
+            atualizarInterface();
+        }
+
+        function limparDados() {
+            if (confirm("Tem certeza que deseja apagar todos os registros e configurações deste veículo?")) {
+                todasDespesas[veiculoAtivoId] = [];
+                localStorage.removeItem(`car_next_service_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_next_service_date_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_purchase_date_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_venc_ipva_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_venc_lic_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_venc_seg_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_venc_cnh_andrey_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_venc_cnh_tiago_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_parcelas_ipva_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_parcelas_lic_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_parcelas_seg_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_aq_total_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_aq_entrada_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_aq_data_entrada_${veiculoAtivoId}`);
+                localStorage.removeItem(`car_parcelas_aquisicao_${veiculoAtivoId}`);
+                
+                document.getElementById('inputProximaRevisao').value = '';
+                document.getElementById('inputDataRevisao').value = '';
+                document.getElementById('inputDataCompra').value = '';
+                document.getElementById('vencimentoIpva').value = '';
+                document.getElementById('vencimentoLicenciamento').value = '';
+                document.getElementById('vencimentoSeguro').value = '';
+                document.getElementById('vencimentoCnhAndrey').value = '';
+                document.getElementById('vencimentoCnhTiago').value = '';
+                
+                verificarStatusVencimentos();
+                atualizarResumoAquisicao();
+                atualizarGraficoAquisicaoCard();
+                cancelarEdicao();
+                salvarNoLocalStorage();
+                popularFiltroAnos();
+                atualizarInterface();
+            }
+        }
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function formatarMoedaInteira(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+        }
+
+        function formatarData(dataIso) {
+            const [ano, mes, dia] = dataIso.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function obterEstiloCategoria(categoria) {
+            switch(categoria) {
+                case 'Abastecimento': return 'bg-blue-100 text-blue-800 border border-blue-300';
+                case 'Aquisição de veículo': return 'bg-indigo-900 text-indigo-100 border border-indigo-700';
+                case 'IPVA': return 'bg-amber-100 text-amber-800 border border-amber-300';
+                case 'Licenciamento': return 'bg-emerald-100 text-emerald-800 border border-emerald-300';
+                case 'Seguro': return 'bg-purple-100 text-purple-800 border border-purple-300';
+                case 'Revisão': return 'bg-red-100 text-red-800 border border-red-300';
+                case 'Multa': return 'bg-pink-100 text-pink-800 border border-pink-300';
+                case 'Acessórios': return 'bg-indigo-100 text-indigo-800 border border-indigo-300';
+                case 'Lavagem': return 'bg-teal-100 text-teal-800 border border-teal-300';
+                case 'Sem Parar': return 'bg-cyan-100 text-cyan-800 border border-cyan-300';
+                case 'Outros': return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
+                default: return 'bg-slate-100 text-slate-700 border border-slate-200';
+            }
+        }
+
+        function atualizarInterface() {
+            let despesas = getDespesasAtuais();
+            const tbody = document.getElementById('expenseTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const filtroTabela = document.getElementById('filtroTabela').value;
+            tbody.innerHTML = '';
+
+            const despesasFiltradasTabela = filtroTabela === 'Todas' 
+                ? despesas 
+                : despesas.filter(d => d.categoria === filtroTabela);
+
+            if (despesas.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            let total = 0;
+            let maiorKm = 0;
+
+            let gastosAbastecimento = 0;
+            let totalLitros = 0;
+            let menorKmAbastecimento = Infinity;
+            let maiorKmAbastecimento = 0;
+
+            despesas.forEach(d => {
+                total += d.valor;
+                if (d.km > maiorKm) maiorKm = d.km;
+
+                if (d.categoria === 'Abastecimento') {
+                    gastosAbastecimento += d.valor;
+                    if (d.litros && d.litros > 0) {
+                        totalLitros += d.litros;
+                    }
+                    if (d.km > maiorKmAbastecimento) maiorKmAbastecimento = d.km;
+                    if (d.km < menorKmAbastecimento) menorKmAbastecimento = d.km;
+                }
+            });
+
+            if (menorKmAbastecimento === Infinity) menorKmAbastecimento = 0;
+
+            let kmRodadosAbastecimento = maiorKmAbastecimento - menorKmAbastecimento;
+            let custoPorKm = (kmRodadosAbastecimento > 0 && gastosAbastecimento > 0) ? (gastosAbastecimento / kmRodadosAbastecimento) : 0;
+
+            // Cálculo Km / Litro
+            let kmPorLitro = 0;
+            if (kmRodadosAbastecimento > 0 && totalLitros > 0) {
+                kmPorLitro = kmRodadosAbastecimento / totalLitros;
+            } else if (kmRodadosAbastecimento > 0 && gastosAbastecimento > 0) {
+                // Estimativa caso não tenha litros informados (considerando preço médio de R$ 5.89/L)
+                let litrosEstimados = gastosAbastecimento / 5.89;
+                kmPorLitro = kmRodadosAbastecimento / litrosEstimados;
+            }
+
+            despesasFiltradasTabela.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                const estiloBadge = obterEstiloCategoria(d.categoria);
+                
+                let infoAbastecimentoHtml = '';
+                if (d.categoria === 'Abastecimento' && d.litros && d.litros > 0) {
+                    infoAbastecimentoHtml = `<div class="text-[11px] text-slate-400 font-normal mt-0.5">${d.litros} L • R$ ${(d.precoLitro || 0).toFixed(2)}/L</div>`;
+                }
+
+                const kmFormatado = (d.categoria === 'Abastecimento' && d.km > 0) ? `${d.km.toLocaleString()} km` : '-';
+
+                tr.innerHTML = `
+                    <td class="py-3 pr-3 text-slate-600">${formatarData(d.data)}</td>
+                    <td class="py-3 pr-3"><span class="px-2.5 py-1 text-xs rounded-full font-medium ${estiloBadge}">${d.categoria}</span></td>
+                    <td class="py-3 pr-3 font-medium text-slate-800">${d.descricao}${infoAbastecimentoHtml}</td>
+                    <td class="py-3 pr-3 text-slate-600">${kmFormatado}</td>
+                    <td class="py-3 pr-3 text-right font-semibold text-slate-900">${formatarMoeda(d.valor)}</td>
+                    <td class="py-3 text-center whitespace-nowrap">
+                        <button onclick="carregarEdicao(${d.id})" class="text-slate-400 hover:text-blue-600 transition p-1 mr-1" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="excluirDespesa(${d.id})" class="text-slate-400 hover:text-red-600 transition p-1" title="Excluir">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if(despesasFiltradasTabela.length === 0 && despesas.length > 0) {
+                emptyState.classList.add('hidden');
+            }
+
+            document.getElementById('totalGasto').innerText = formatarMoeda(total);
+            document.getElementById('ultimaKm').innerText = `${maiorKm.toLocaleString()} km`;
+            document.getElementById('custoPorKm').innerText = formatarMoeda(custoPorKm);
+            document.getElementById('kmPorLitro').innerText = `${kmPorLitro.toFixed(1).replace('.', ',')} km/L`;
+
+            atualizarContadorRevisao();
+            atualizarResumoAquisicao();
+            atualizarGraficoCategoria();
+            atualizarGraficoAquisicaoCard();
+            atualizarGraficoMensal();
+        }
+
+        function obterDespesasFiltradasPorPeriodo() {
+            let despesas = getDespesasAtuais();
+            const anoSelecionado = document.getElementById('filtroAno').value;
+            const mesSelecionado = document.getElementById('filtroMes').value;
+
+            return despesas.filter(d => {
+                if (!d.data) return false;
+                const [ano, mes] = d.data.split('-');
+                if (ano !== anoSelecionado) return false;
+                if (mesSelecionado !== 'Todos' && mes !== mesSelecionado) return false;
+                return true;
+            });
+        }
+
+        function atualizarGraficoCategoria() {
+            const ctx = document.getElementById('graficoCategorias').getContext('2d');
+            const despesasFiltradas = obterDespesasFiltradasPorPeriodo();
+
+            let labelsDesteGrafico = [];
+            let dadosDesteGrafico = [];
+            let coresDesteGrafico = [];
+
+            listaCategorias.forEach((cat, idx) => {
+                if (cat === 'Aquisição de veículo') return;
+                const somaCat = despesasFiltradas.filter(d => d.categoria === cat).reduce((sum, item) => sum + item.valor, 0);
+                if (somaCat > 0) {
+                    labelsDesteGrafico.push(cat);
+                    dadosDesteGrafico.push(somaCat);
+                    coresDesteGrafico.push(coresCategorias[idx]);
+                }
+            });
+
+            if (dadosDesteGrafico.length === 0) {
+                labelsDesteGrafico = ['Sem registros'];
+                dadosDesteGrafico = [1];
+                coresDesteGrafico = ['#e2e8f0'];
+            }
+
+            const containerLegenda = document.getElementById('legendaLateral');
+            containerLegenda.innerHTML = '';
+            listaCategorias.forEach((cat, idx) => {
+                if (cat === 'Aquisição de veículo') return;
+                const cor = coresCategorias[idx];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "flex items-center gap-2 py-1 border-b border-slate-100 last:border-none";
+                itemDiv.innerHTML = `
+                    <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${cor};"></span>
+                    <span class="text-slate-700 truncate" title="${cat}">${cat}</span>
+                `;
+                containerLegenda.appendChild(itemDiv);
+            });
+
+            if (meuGrafico) {
+                meuGrafico.destroy();
+            }
+
+            meuGrafico = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labelsDesteGrafico,
+                    datasets: [{
+                        data: dadosDesteGrafico,
+                        backgroundColor: coresDesteGrafico,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#1e293b',
+                            font: { weight: 'bold', size: 10 },
+                            formatter: function(value, context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const porcentagem = total > 0 ? (value / total) * 100 : 0;
+                                if (porcentagem < 5 || labelsDesteGrafico[0] === 'Sem registros') return '';
+                                return formatarMoedaInteira(value);
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.label === 'Sem registros') return ' Nenhum gasto no período';
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
+                                    const valorFormatado = formatarMoedaInteira(value);
+                                    return ` ${label}: ${valorFormatado} (${percentage})`;
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        function atualizarGraficoAquisicaoCard() {
+            const ctx = document.getElementById('graficoAquisicaoCard').getContext('2d');
+            const totalVeiculo = parseFloat(localStorage.getItem(`car_aq_total_${veiculoAtivoId}`)) || 0;
+            const entrada = parseFloat(localStorage.getItem(`car_aq_entrada_${veiculoAtivoId}`)) || 0;
+            let parcelas = obterParcelasAquisicaoAtuais();
+
+            let totalParcelasPagas = parcelas.filter(p => p.pago).reduce((sum, p) => sum + p.valor, 0);
+            let totalPago = entrada + totalParcelasPagas;
+            let restante = totalVeiculo > totalPago ? totalVeiculo - totalPago : 0;
+
+            let labels = ['Valor Pago (Entrada + Parcelas)', 'Restante a Pagar'];
+            let dados = [totalPago, restante];
+            let cores = ['#059669', '#cbd5e1'];
+
+            if (totalVeiculo === 0 && totalPago === 0) {
+                labels = ['Não configurado'];
+                dados = [1];
+                cores = ['#e2e8f0'];
+            }
+
+            const containerLegenda = document.getElementById('legendaAquisicaoCard');
+            containerLegenda.innerHTML = `
+                <div class="flex items-center justify-between py-0.5 border-b border-slate-100">
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span><span class="text-slate-700">Total Pago</span></div>
+                    <span class="font-bold text-slate-900">${formatarMoeda(totalPago)}</span>
+                </div>
+                <div class="flex items-center justify-between py-0.5">
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span><span class="text-slate-700">Restante</span></div>
+                    <span class="font-bold text-slate-900">${formatarMoeda(restante)}</span>
+                </div>
+            `;
+
+            if (meuGraficoAquisicaoCard) {
+                meuGraficoAquisicaoCard.destroy();
+            }
+
+            meuGraficoAquisicaoCard = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dados,
+                        backgroundColor: cores,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#1e293b',
+                            font: { weight: 'bold', size: 9 },
+                            formatter: function(value, context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const porcentagem = total > 0 ? (value / total) * 100 : 0;
+                                if (porcentagem < 5 || labels[0] === 'Não configurado') return '';
+                                return formatarMoedaInteira(value);
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.label === 'Não configurado') return ' Configure a aquisição do veículo';
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
+                                    return ` ${label}: ${formatarMoedaInteira(value)} (${percentage})`;
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        function atualizarGraficoMensal() {
+            let despesas = getDespesasAtuais();
+            const ctx = document.getElementById('graficoMensal').getContext('2d');
+            const anoSelecionado = document.getElementById('filtroAno').value;
+            const mesSelecionado = document.getElementById('filtroMes').value;
+            
+            let gastosPorMes = new Array(12).fill(0);
+            despesas.forEach(d => {
+                if (d.data) {
+                    const [ano, mesStr] = d.data.split('-');
+                    if (ano === anoSelecionado) {
+                        const mes = parseInt(mesStr) - 1;
+                        if (mes >= 0 && mes < 12) {
+                            gastosPorMes[mes] += d.valor;
+                        }
+                    }
+                }
+            });
+
+            let labelsGrafico = nomesMeses;
+            let dadosGrafico = gastosPorMes;
+
+            if (mesSelecionado !== 'Todos') {
+                const indexMes = parseInt(mesSelecionado) - 1;
+                labelsGrafico = [nomesMeses[indexMes]];
+                dadosGrafico = [gastosPorMes[indexMes]];
+            }
+
+            if (meuGraficoMensal) {
+                meuGraficoMensal.destroy();
+            }
+
+            meuGraficoMensal = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelsGrafico,
+                    datasets: [{
+                        label: 'Gasto Mensal',
+                        data: dadosGrafico,
+                        backgroundColor: '#2563eb',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#1e293b',
+                            font: { weight: 'bold', size: 10 },
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) {
+                                if (value === 0) return '';
+                                return formatarMoedaInteira(value);
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw || 0;
+                                    return ` Gasto: ${formatarMoedaInteira(value)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 1800,
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        popularSeletorVeiculos();
+        carregarConfiguracoesVeiculo();
+        popularFiltroAnos();
+        verificarCategoriaAbastecimento();
+        atualizarInterface();
+    </script>
+</body>
+</html>
