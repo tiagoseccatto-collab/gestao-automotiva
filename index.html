@@ -9,31 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA63xzyFnrkEGIXFahqMCRdT1edMkuxX44",
-            authDomain: "gestao-automotiva-6829f.firebaseapp.com",
-            projectId: "gestao-automotiva-6829f",
-            storageBucket: "gestao-automotiva-6829f.firebasestorage.app",
-            messagingSenderId: "83943929096",
-            appId: "1:83943929096:web:106117a113cd0667b4a8bd"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.db = db;
-        window.FirestoreSDK = { doc, setDoc, getDoc };
-        
-        if (typeof carregarDoFirebase === 'function') {
-            carregarDoFirebase();
-        }
-    </script>
-
     <!-- Estilo para o Dark Mode Global e Abas -->
     <style>
         .dark-mode { 
@@ -618,6 +593,32 @@
         <i class="fa-solid fa-moon"></i>
     </button>
 
+    <!-- Firebase SDKs e Inicialização Síncrona Segura -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA63xzyFnrkEGIXFahqMCRdT1edMkuxX44",
+            authDomain: "gestao-automotiva-6829f.firebaseapp.com",
+            projectId: "gestao-automotiva-6829f",
+            storageBucket: "gestao-automotiva-6829f.firebasestorage.app",
+            messagingSenderId: "83943929096",
+            appId: "1:83943929096:web:106117a113cd0667b4a8bd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.FirestoreSDK = { doc, setDoc, getDoc };
+        
+        // Executa a carga do Firebase e só então inicializa a interface
+        if (typeof carregarDoFirebase === 'function') {
+            await carregarDoFirebase();
+        }
+    </script>
+
     <script>
         let abaAtivaAtual = 'painel';
 
@@ -625,14 +626,17 @@
             abaAtivaAtual = abaId;
             localStorage.setItem('car_last_tab', abaId);
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + abaId).classList.add('active');
+            const abaAlvo = document.getElementById('tab-' + abaId);
+            if (abaAlvo) abaAlvo.classList.add('active');
 
             ['painel', 'abastecimentos', 'aquisicao', 'obrigacoes'].forEach(id => {
                 const btn = document.getElementById('nav-' + id);
-                if (id === abaId) {
-                    btn.className = "flex flex-col items-center py-1.5 text-blue-600 font-semibold transition";
-                } else {
-                    btn.className = "flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition";
+                if (btn) {
+                    if (id === abaId) {
+                        btn.className = "flex flex-col items-center py-1.5 text-blue-600 font-semibold transition";
+                    } else {
+                        btn.className = "flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition";
+                    }
                 }
             });
 
@@ -654,17 +658,21 @@
             const isDark = html.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDark);
             const icon = document.querySelector('#btnToggleDark i');
-            icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            if (icon) icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
 
         if (localStorage.getItem('darkMode') === 'true') {
             document.documentElement.classList.add('dark-mode');
-            document.querySelector('#btnToggleDark i').className = 'fa-solid fa-sun';
+            const icon = document.querySelector('#btnToggleDark i');
+            if (icon) icon.className = 'fa-solid fa-sun';
         }
 
         function atualizarCache() {
-            const abaAtual = document.querySelector('.tab-content.active').id.replace('tab-', '');
-            localStorage.setItem('car_last_tab', abaAtual);
+            // Mantém a aba atual salva antes de recarregar
+            const abaAtual = document.querySelector('.tab-content.active');
+            if (abaAtual) {
+                localStorage.setItem('car_last_tab', abaAtual.id.replace('tab-', ''));
+            }
             location.reload();
         }
 
@@ -744,7 +752,8 @@
         const coresCategorias = ['#2563eb', '#1e1b4b', '#d97706', '#059669', '#7c3aed', '#dc2626', '#db2777', '#4f46e5', '#0d9488', '#0ea5e9', '#ca8a04'];
         const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-        document.getElementById('data').valueAsDate = new Date('2026-08-17');
+        const inputDataEl = document.getElementById('data');
+        if (inputDataEl) inputDataEl.valueAsDate = new Date('2026-08-17');
 
         function inicializarEstadoApp() {
             popularSeletorVeiculos();
@@ -787,7 +796,9 @@
         }
 
         function verificarCategoriaAbastecimento() {
-            const categoria = document.getElementById('categoria').value;
+            const categoriaEl = document.getElementById('categoria');
+            if (!categoriaEl) return;
+            const categoria = categoriaEl.value;
             const blocoKm = document.getElementById('blocoKm');
             const inputKm = document.getElementById('km');
             const containerAbastecimento = document.getElementById('camposAbastecimento');
@@ -828,6 +839,7 @@
 
         function popularSeletorVeiculos() {
             const select = document.getElementById('selectVeiculoAtivo');
+            if (!select) return;
             select.innerHTML = '';
             veiculos.forEach(v => {
                 const opt = document.createElement('option');
@@ -1127,8 +1139,11 @@
                     parcelas.sort((a, b) => new Date(a.data) - new Date(b.data));
                     let proxima = parcelas.find(p => new Date(p.data) >= hoje) || parcelas[0];
                     const inputId = tipo === 'ipva' ? 'vencimentoIpva' : (tipo === 'lic' ? 'vencimentoLicenciamento' : 'vencimentoSeguro');
-                    document.getElementById(inputId).value = proxima.data;
-                    localStorage.setItem(`car_venc_${tipo}_${veiculoAtivoId}`, proxima.data);
+                    const inputEl = document.getElementById(inputId);
+                    if (inputEl) {
+                        inputEl.value = proxima.data;
+                        localStorage.setItem(`car_venc_${tipo}_${veiculoAtivoId}`, proxima.data);
+                    }
                 }
             });
         }
@@ -1160,14 +1175,15 @@
         }
 
         function carregarConfiguracoesVeiculo() {
-            document.getElementById('inputProximaRevisao').value = localStorage.getItem(`car_next_service_${veiculoAtivoId}`) || '';
-            document.getElementById('inputDataRevisao').value = localStorage.getItem(`car_next_service_date_${veiculoAtivoId}`) || '';
-            document.getElementById('inputDataCompra').value = localStorage.getItem(`car_purchase_date_${veiculoAtivoId}`) || '';
-            document.getElementById('vencimentoIpva').value = localStorage.getItem(`car_venc_ipva_${veiculoAtivoId}`) || '';
-            document.getElementById('vencimentoLicenciamento').value = localStorage.getItem(`car_venc_lic_${veiculoAtivoId}`) || '';
-            document.getElementById('vencimentoSeguro').value = localStorage.getItem(`car_venc_seg_${veiculoAtivoId}`) || '';
-            document.getElementById('vencimentoCnhAndrey').value = localStorage.getItem(`car_venc_cnh_andrey_${veiculoAtivoId}`) || '';
-            document.getElementById('vencimentoCnhTiago').value = localStorage.getItem(`car_venc_cnh_tiago_${veiculoAtivoId}`) || '';
+            const setValue = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+            setValue('inputProximaRevisao', localStorage.getItem(`car_next_service_${veiculoAtivoId}`) || '');
+            setValue('inputDataRevisao', localStorage.getItem(`car_next_service_date_${veiculoAtivoId}`) || '');
+            setValue('inputDataCompra', localStorage.getItem(`car_purchase_date_${veiculoAtivoId}`) || '');
+            setValue('vencimentoIpva', localStorage.getItem(`car_venc_ipva_${veiculoAtivoId}`) || '');
+            setValue('vencimentoLicenciamento', localStorage.getItem(`car_venc_lic_${veiculoAtivoId}`) || '');
+            setValue('vencimentoSeguro', localStorage.getItem(`car_venc_seg_${veiculoAtivoId}`) || '');
+            setValue('vencimentoCnhAndrey', localStorage.getItem(`car_venc_cnh_andrey_${veiculoAtivoId}`) || '');
+            setValue('vencimentoCnhTiago', localStorage.getItem(`car_venc_cnh_tiago_${veiculoAtivoId}`) || '');
             atualizarDataPrincipalPorParcelas();
             verificarStatusVencimentos();
             atualizarResumoAquisicao();
@@ -1213,11 +1229,13 @@
 
         function verificarStatusVencimentos() {
             ['Ipva', 'Licenciamento', 'Seguro', 'CnhAndrey', 'CnhTiago'].forEach(tipo => {
-                const val = document.getElementById('vencimento' + tipo).value;
-                const res = calcularStatusDias(val);
+                const inputEl = document.getElementById('vencimento' + tipo);
                 const el = document.getElementById('status' + tipo);
-                el.innerText = res.texto;
-                el.className = `text-[9px] font-bold mt-1 ${res.classe}`;
+                if (inputEl && el) {
+                    const res = calcularStatusDias(inputEl.value);
+                    el.innerText = res.texto;
+                    el.className = `text-[9px] font-bold mt-1 ${res.classe}`;
+                }
             });
         }
 
@@ -1225,6 +1243,7 @@
             const metaKmInput = document.getElementById('inputProximaRevisao').value;
             const dataLimiteInput = document.getElementById('inputDataRevisao').value;
             const obsEl = document.getElementById('obsRevisao');
+            if (!obsEl) return;
             let maiorKm = 0;
             getDespesasAtuais().forEach(d => { if (d.km > maiorKm) maiorKm = d.km; });
 
@@ -1251,7 +1270,8 @@
 
         function popularFiltroAnos() {
             const selectAno = document.getElementById('filtroAno');
-            const anoSelecionadoAnterior = selectAno.value;
+            if (!selectAno) return;
+            const valorAtualSelecionado = selectAno.value;
             let anos = new Set([new Date('2026-08-17').getFullYear().toString()]);
             getDespesasAtuais().forEach(d => { if (d.data) anos.add(d.data.split('-')[0]); });
             const ordenados = Array.from(anos).sort((a,b) => b-a);
@@ -1263,8 +1283,8 @@
                 selectAno.appendChild(opt);
             });
 
-            if (ordenados.includes(anoSelecionadoAnterior)) {
-                selectAno.value = anoSelecionadoAnterior;
+            if (ordenados.includes(valorAtualSelecionado)) {
+                selectAno.value = valorAtualSelecionado;
             } else if (ordenados.length > 0) {
                 selectAno.value = ordenados[0];
             }
@@ -1361,10 +1381,10 @@
             const tbody = document.getElementById('expenseTableBody');
             const emptyState = document.getElementById('emptyState');
             const filtroTabela = document.getElementById('filtroTabela').value;
-            tbody.innerHTML = '';
+            if (tbody) tbody.innerHTML = '';
 
             const filtradasTabela = filtroTabela === 'Todas' ? despesas : despesas.filter(d => d.categoria === filtroTabela);
-            emptyState.classList.toggle('hidden', despesas.length > 0);
+            if (emptyState) emptyState.classList.toggle('hidden', despesas.length > 0);
 
             let total = 0, maiorKm = 0, gastosAbast = 0, totalLitros = 0, menorKmAbast = Infinity, maiorKmAbast = 0;
             despesas.forEach(d => {
@@ -1383,27 +1403,30 @@
             let custoKm = (kmRodados > 0 && gastosAbast > 0) ? (gastosAbast / kmRodados) : 0;
             let kmLitro = kmRodados > 0 && totalLitros > 0 ? (kmRodados / totalLitros) : (kmRodados > 0 && gastosAbast > 0 ? kmRodados / (gastosAbast / 5.89) : 0);
 
-            filtradasTabela.forEach(d => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                const infoAbast = (d.categoria === 'Abastecimento' && d.litros > 0) ? `<div class="text-[10px] text-slate-400">${d.litros} L • R$ ${(d.precoLitro||0).toFixed(2)}/L</div>` : '';
-                tr.innerHTML = `
-                    <td class="py-2 pr-2 text-slate-600">${formatarData(d.data)}</td>
-                    <td class="py-2 pr-2"><span class="px-2 py-0.5 text-[10px] rounded-full font-medium ${obterEstiloCategoria(d.categoria)}">${d.categoria}</span></td>
-                    <td class="py-2 pr-2 font-medium text-slate-800">${d.descricao}${infoAbast}</td>
-                    <td class="py-2 pr-2 text-slate-600">${d.categoria === 'Abastecimento' && d.km > 0 ? d.km.toLocaleString() + ' km' : '-'}</td>
-                    <td class="py-2 pr-2 text-right font-semibold text-slate-900">${formatarMoeda(d.valor)}</td>
-                    <td class="py-2 text-center whitespace-nowrap">
-                        <button onclick="carregarEdicao(${d.id})" class="text-slate-400 hover:text-blue-600 p-1 mr-0.5"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="excluirDespesa(${d.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button>
-                    </td>`;
-                tbody.appendChild(tr);
-            });
+            if (tbody) {
+                filtradasTabela.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition";
+                    const infoAbast = (d.categoria === 'Abastecimento' && d.litros > 0) ? `<div class="text-[10px] text-slate-400">${d.litros} L • R$ ${(d.precoLitro||0).toFixed(2)}/L</div>` : '';
+                    tr.innerHTML = `
+                        <td class="py-2 pr-2 text-slate-600">${formatarData(d.data)}</td>
+                        <td class="py-2 pr-2"><span class="px-2 py-0.5 text-[10px] rounded-full font-medium ${obterEstiloCategoria(d.categoria)}">${d.categoria}</span></td>
+                        <td class="py-2 pr-2 font-medium text-slate-800">${d.descricao}${infoAbast}</td>
+                        <td class="py-2 pr-2 text-slate-600">${d.categoria === 'Abastecimento' && d.km > 0 ? d.km.toLocaleString() + ' km' : '-'}</td>
+                        <td class="py-2 pr-2 text-right font-semibold text-slate-900">${formatarMoeda(d.valor)}</td>
+                        <td class="py-2 text-center whitespace-nowrap">
+                            <button onclick="carregarEdicao(${d.id})" class="text-slate-400 hover:text-blue-600 p-1 mr-0.5"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirDespesa(${d.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>`;
+                    tbody.appendChild(tr);
+                });
+            }
 
-            document.getElementById('totalGasto').innerText = formatarMoeda(total);
-            document.getElementById('ultimaKm').innerText = `${maiorKm.toLocaleString()} km`;
-            document.getElementById('custoPorKm').innerText = formatarMoeda(custoKm);
-            document.getElementById('kmPorLitro').innerText = `${kmLitro.toFixed(1).replace('.', ',')} km/L`;
+            const setText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+            setText('totalGasto', formatarMoeda(total));
+            setText('ultimaKm', `${maiorKm.toLocaleString()} km`);
+            setText('custoPorKm', formatarMoeda(custoKm));
+            setText('kmPorLitro', `${kmLitro.toFixed(1).replace('.', ',')} km/L`);
 
             atualizarContadorRevisao();
             atualizarResumoAquisicao();
@@ -1414,8 +1437,11 @@
 
         function obterDespesasPeriodo() {
             let despesas = getDespesasAtuais();
-            const ano = document.getElementById('filtroAno').value;
-            const mes = document.getElementById('filtroMes').value;
+            const filtroAnoEl = document.getElementById('filtroAno');
+            const filtroMesEl = document.getElementById('filtroMes');
+            const ano = filtroAnoEl ? filtroAnoEl.value : new Date('2026-08-17').getFullYear().toString();
+            const mes = filtroMesEl ? filtroMesEl.value : 'Todos';
+
             return despesas.filter(d => {
                 if (!d.data) return false;
                 const [a, m] = d.data.split('-');
@@ -1426,7 +1452,9 @@
         }
 
         function atualizarGraficoCategoria() {
-            const ctx = document.getElementById('graficoCategorias').getContext('2d');
+            const canvasEl = document.getElementById('graficoCategorias');
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
             const filtradas = obterDespesasPeriodo();
             let labels = [], dados = [], cores = [];
 
@@ -1439,11 +1467,13 @@
             if (dados.length === 0) { labels = ['Sem registros']; dados = [1]; cores = ['#e2e8f0']; }
 
             const legenda = document.getElementById('legendaLateral');
-            legenda.innerHTML = '';
-            listaCategorias.forEach((cat, idx) => {
-                if (cat === 'Aquisição de veículo') return;
-                legenda.innerHTML += `<div class="flex items-center gap-1.5 py-0.5 border-b border-slate-100"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${coresCategorias[idx]};"></span><span class="text-slate-700 truncate">${cat}</span></div>`;
-            });
+            if (legenda) {
+                legenda.innerHTML = '';
+                listaCategorias.forEach((cat, idx) => {
+                    if (cat === 'Aquisição de veículo') return;
+                    legenda.innerHTML += `<div class="flex items-center gap-1.5 py-0.5 border-b border-slate-100"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${coresCategorias[idx]};"></span><span class="text-slate-700 truncate">${cat}</span></div>`;
+                });
+            }
 
             if (meuGrafico) meuGrafico.destroy();
             meuGrafico = new Chart(ctx, {
@@ -1465,7 +1495,9 @@
         }
 
         function atualizarGraficoAquisicaoCard() {
-            const ctx = document.getElementById('graficoAquisicaoCard').getContext('2d');
+            const canvasEl = document.getElementById('graficoAquisicaoCard');
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
             const totalV = parseFloat(localStorage.getItem(`car_aq_total_${veiculoAtivoId}`)) || 0;
             const entrada = parseFloat(localStorage.getItem(`car_aq_entrada_${veiculoAtivoId}`)) || 0;
             let pagas = obterParcelasAquisicaoAtuais().filter(p => p.pago).reduce((s, p) => s + p.valor, 0);
@@ -1477,9 +1509,12 @@
             let cores = ['#059669', '#cbd5e1'];
             if (totalV === 0 && pago === 0) { labels = ['Não configurado']; dados = [1]; cores = ['#e2e8f0']; }
 
-            document.getElementById('legendaAquisicaoCard').innerHTML = `
-                <div class="flex items-center justify-between py-0.5 border-b border-slate-100"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span>Pago</span></div><span class="font-bold">${formatarMoeda(pago)}</span></div>
-                <div class="flex items-center justify-between py-0.5"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span><span>Restante</span></div><span class="font-bold">${formatarMoeda(restante)}</span></div>`;
+            const legendaAq = document.getElementById('legendaAquisicaoCard');
+            if (legendaAq) {
+                legendaAq.innerHTML = `
+                    <div class="flex items-center justify-between py-0.5 border-b border-slate-100"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span>Pago</span></div><span class="font-bold">${formatarMoeda(pago)}</span></div>
+                    <div class="flex items-center justify-between py-0.5"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span><span>Restante</span></div><span class="font-bold">${formatarMoeda(restante)}</span></div>`;
+            }
 
             if (meuGraficoAquisicaoCard) meuGraficoAquisicaoCard.destroy();
             meuGraficoAquisicaoCard = new Chart(ctx, {
@@ -1499,9 +1534,13 @@
 
         function atualizarGraficoMensal() {
             let despesas = getDespesasAtuais();
-            const ctx = document.getElementById('graficoMensal').getContext('2d');
-            const ano = document.getElementById('filtroAno').value;
-            const mes = document.getElementById('filtroMes').value;
+            const canvasEl = document.getElementById('graficoMensal');
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
+            const filtroAnoEl = document.getElementById('filtroAno');
+            const filtroMesEl = document.getElementById('filtroMes');
+            const ano = filtroAnoEl ? filtroAnoEl.value : new Date('2026-08-17').getFullYear().toString();
+            const mes = filtroMesEl ? filtroMesEl.value : 'Todos';
             let gastos = new Array(12).fill(0);
 
             despesas.forEach(d => {
