@@ -613,7 +613,6 @@
         window.db = db;
         window.FirestoreSDK = { doc, setDoc, getDoc };
         
-        // Executa a carga do Firebase e só então inicializa a interface
         if (typeof carregarDoFirebase === 'function') {
             await carregarDoFirebase();
         }
@@ -668,10 +667,10 @@
         }
 
         function atualizarCache() {
-            // Mantém a aba atual salva antes de recarregar
-            const abaAtual = document.querySelector('.tab-content.active');
-            if (abaAtual) {
-                localStorage.setItem('car_last_tab', abaAtual.id.replace('tab-', ''));
+            const abaAtiva = document.querySelector('.tab-content.active');
+            if (abaAtiva) {
+                const idAba = abaAtiva.id.replace('tab-', '');
+                localStorage.setItem('car_last_tab', idAba);
             }
             location.reload();
         }
@@ -762,6 +761,7 @@
             verificarCategoriaAbastecimento();
             atualizarInterface();
             
+            // Restaura estritamente a última aba salva
             const ultimaAba = localStorage.getItem('car_last_tab') || 'painel';
             mudarAba(ultimaAba);
         }
@@ -1271,7 +1271,10 @@
         function popularFiltroAnos() {
             const selectAno = document.getElementById('filtroAno');
             if (!selectAno) return;
-            const valorAtualSelecionado = selectAno.value;
+            
+            // CORREÇÃO: Armazena o ano que já estava selecionado para não perdê-lo
+            const anoAnterior = selectAno.value;
+
             let anos = new Set([new Date('2026-08-17').getFullYear().toString()]);
             getDespesasAtuais().forEach(d => { if (d.data) anos.add(d.data.split('-')[0]); });
             const ordenados = Array.from(anos).sort((a,b) => b-a);
@@ -1283,8 +1286,9 @@
                 selectAno.appendChild(opt);
             });
 
-            if (ordenados.includes(valorAtualSelecionado)) {
-                selectAno.value = valorAtualSelecionado;
+            // Restaura o ano selecionado ou define o mais recente
+            if (anoAnterior && ordenados.includes(anoAnterior)) {
+                selectAno.value = anoAnterior;
             } else if (ordenados.length > 0) {
                 selectAno.value = ordenados[0];
             }
