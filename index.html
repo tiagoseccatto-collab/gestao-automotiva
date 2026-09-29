@@ -9,6 +9,32 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA63xzyFnrkEGIXFahqMCRdT1edMkuxX44",
+            authDomain: "gestao-automotiva-6829f.firebaseapp.com",
+            projectId: "gestao-automotiva-6829f",
+            storageBucket: "gestao-automotiva-6829f.firebasestorage.app",
+            messagingSenderId: "83943929096",
+            appId: "1:83943929096:web:106117a113cd0667b4a8bd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.FirestoreSDK = { doc, setDoc, getDoc };
+        
+        // Dispara o carregamento do banco assim que o Firebase iniciar
+        if (typeof carregarDoFirebase === 'function') {
+            carregarDoFirebase();
+        }
+    </script>
+
     <!-- Estilo para o Dark Mode Global -->
     <style>
         .dark-mode { 
@@ -691,6 +717,41 @@
 
         document.getElementById('data').valueAsDate = new Date('2026-08-17');
 
+        // Sincronização com o Firestore
+        async function salvarNoFirebase() {
+            if (!window.db) return;
+            try {
+                const dadosParaSalvar = {
+                    veiculos: veiculos,
+                    veiculoAtivoId: veiculoAtivoId,
+                    todasDespesas: todasDespesas
+                };
+                await window.FirestoreSDK.setDoc(window.FirestoreSDK.doc(window.db, "gestao", "dados_app"), dadosParaSalvar);
+            } catch (e) {
+                console.error("Erro ao salvar no Firestore:", e);
+            }
+        }
+
+        async function carregarDoFirebase() {
+            if (!window.db) return;
+            try {
+                const docSnap = await window.FirestoreSDK.getDoc(window.FirestoreSDK.doc(window.db, "gestao", "dados_app"));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.veiculos) veiculos = data.veiculos;
+                    if (data.veiculoAtivoId) veiculoAtivoId = data.veiculoAtivoId;
+                    if (data.todasDespesas) todasDespesas = data.todasDespesas;
+                    
+                    popularSeletorVeiculos();
+                    carregarConfiguracoesVeiculo();
+                    popularFiltroAnos();
+                    atualizarInterface();
+                }
+            } catch (e) {
+                console.error("Erro ao carregar do Firestore:", e);
+            }
+        }
+
         function verificarCategoriaAbastecimento() {
             const categoria = document.getElementById('categoria').value;
             const blocoKm = document.getElementById('blocoKm');
@@ -756,6 +817,7 @@
             carregarConfiguracoesVeiculo();
             popularFiltroAnos();
             atualizarInterface();
+            salvarNoFirebase();
         }
 
         function abrirModalNovoVeiculo() {
@@ -1157,6 +1219,7 @@
             carregarConfiguracoesVeiculo();
             popularFiltroAnos();
             atualizarInterface();
+            salvarNoFirebase();
         }
 
         function carregarConfiguracoesVeiculo() {
@@ -1373,6 +1436,7 @@
 
         function salvarNoLocalStorage() {
             localStorage.setItem('car_fleet_expenses', JSON.stringify(todasDespesas));
+            salvarNoFirebase();
         }
 
         function popularFiltroAnos() {
@@ -1621,7 +1685,6 @@
             if (kmRodadosAbastecimento > 0 && totalLitros > 0) {
                 kmPorLitro = kmRodadosAbastecimento / totalLitros;
             } else if (kmRodadosAbastecimento > 0 && gastosAbastecimento > 0) {
-                // Estimativa caso não tenha litros informados (considerando preço médio de R$ 5.89/L)
                 let litrosEstimados = gastosAbastecimento / 5.89;
                 kmPorLitro = kmRodadosAbastecimento / litrosEstimados;
             }
