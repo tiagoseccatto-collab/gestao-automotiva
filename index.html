@@ -50,122 +50,117 @@
         .tab-content.active { display: block; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-24 md:pb-8 p-4 md:p-8 flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-24 md:pb-8 p-3 md:p-6 flex flex-col justify-between text-sm">
 
-    <div class="max-w-5xl mx-auto w-full">
-        <!-- Cabeçalho com Seletor de Veículo e Data da Compra -->
-        <header class="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+    <div class="max-w-4xl mx-auto w-full">
+        <!-- Cabeçalho Compacto para Celular -->
+        <header class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                <h1 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-car-side text-blue-600"></i> Gestão Automotiva
                 </h1>
-                <p class="text-xs text-slate-500 mt-1">Alterne entre os veículos para gerenciar despesas específicas.</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">Alterne entre os veículos e gerencie despesas.</p>
             </div>
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-wrap items-center gap-2.5">
                 <div class="flex flex-col">
-                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Veículo Ativo</label>
-                    <select id="selectVeiculoAtivo" onchange="trocarVeiculoAtivo()" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50">
+                    <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Veículo Ativo</label>
+                    <select id="selectVeiculoAtivo" onchange="trocarVeiculoAtivo()" class="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 bg-slate-50">
                         <!-- Preenchido via JS -->
                     </select>
                 </div>
                 <div class="flex flex-col">
-                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Data da Compra</label>
-                    <div class="flex items-center gap-1.5">
-                        <input type="date" id="inputDataCompra" onchange="salvarDataCompra()" class="rounded-xl border border-slate-300 px-2 py-2 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50">
-                    </div>
+                    <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Data Compra</label>
+                    <input type="date" id="inputDataCompra" onchange="salvarDataCompra()" class="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 bg-slate-50">
                 </div>
-                <div class="flex items-center gap-2 mt-5">
-                    <button onclick="abrirModalNovoVeiculo()" class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl transition text-sm shadow-sm" title="Adicionar Novo Veículo">
+                <div class="flex items-center gap-1.5 mt-4">
+                    <button onclick="abrirModalNovoVeiculo()" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition text-xs shadow-sm" title="Adicionar Novo Veículo">
                         <i class="fa-solid fa-plus"></i>
                     </button>
-                    <button onclick="limparDados()" class="text-xs text-red-500 hover:text-red-700 underline mb-1 ml-1" title="Resetar dados do carro atual">
-                        <i class="fa-solid fa-trash-can mr-1"></i> Resetar
+                    <button onclick="limparDados()" class="text-[11px] text-red-500 hover:text-red-700 underline" title="Resetar dados do carro atual">
+                        Resetar
                     </button>
                 </div>
             </div>
         </header>
 
         <!-- ================= ABA 1: PAINEL GERAL ================= -->
-        <div id="tab-painel" class="tab-content active space-y-6">
-            <!-- Cards Resumo (4 Cards) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-5 rounded-2xl shadow-sm border border-blue-100 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Gasto Total</span>
-                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">
+        <div id="tab-painel" class="tab-content active space-y-4">
+            <!-- Cards Resumo (4 Cards Compactos) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-3.5 rounded-xl shadow-sm border border-blue-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Gasto Total</span>
+                        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-money-bill-wave"></i>
                         </div>
                     </div>
-                    <h3 id="totalGasto" class="text-2xl font-black text-slate-900">R$ 0,00</h3>
+                    <h3 id="totalGasto" class="text-lg font-black text-slate-900">R$ 0,00</h3>
                 </div>
-                <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 p-5 rounded-2xl shadow-sm border border-emerald-100 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Última Quilometragem</span>
-                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shadow-sm">
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 p-3.5 rounded-xl shadow-sm border border-emerald-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Última Km</span>
+                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-gauge-high"></i>
                         </div>
                     </div>
-                    <h3 id="ultimaKm" class="text-2xl font-black text-slate-900">0 km</h3>
+                    <h3 id="ultimaKm" class="text-lg font-black text-slate-900">0 km</h3>
                 </div>
-                <div class="bg-gradient-to-br from-violet-50 to-purple-50/50 p-5 rounded-2xl shadow-sm border border-violet-100 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-violet-600">Custo Médio / Km</span>
-                        <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-sm shadow-sm">
+                <div class="bg-gradient-to-br from-violet-50 to-purple-50/50 p-3.5 rounded-xl shadow-sm border border-violet-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-violet-600">Custo / Km</span>
+                        <div class="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-calculator"></i>
                         </div>
                     </div>
-                    <h3 id="custoPorKm" class="text-2xl font-black text-slate-900">R$ 0,00</h3>
+                    <h3 id="custoPorKm" class="text-lg font-black text-slate-900">R$ 0,00</h3>
                 </div>
-                <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-5 rounded-2xl shadow-sm border border-amber-100 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Média Km / Litro</span>
-                        <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm shadow-sm">
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-3.5 rounded-xl shadow-sm border border-amber-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600">Média Km/L</span>
+                        <div class="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-gas-pump"></i>
                         </div>
                     </div>
-                    <h3 id="kmPorLitro" class="text-2xl font-black text-slate-900">0,0 km/L</h3>
+                    <h3 id="kmPorLitro" class="text-lg font-black text-slate-900">0,0 km/L</h3>
                 </div>
             </div>
 
             <!-- Card Highlight: Próxima Revisão Prevista -->
-            <div class="bg-gradient-to-r from-amber-100/80 to-amber-50 p-5 rounded-2xl shadow-sm border border-amber-200 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-                <div class="flex items-center gap-3 w-full lg:w-auto">
-                    <div class="w-12 h-12 rounded-xl bg-amber-200 text-amber-800 flex items-center justify-center text-xl shadow-sm shrink-0">
+            <div class="bg-gradient-to-r from-amber-100/80 to-amber-50 p-4 rounded-xl shadow-sm border border-amber-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-lg bg-amber-200 text-amber-800 flex items-center justify-center text-base shrink-0">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-amber-800">Próxima Revisão do Carro</p>
-                        <h3 class="text-base font-black text-slate-900">Controle por Quilometragem ou Data</h3>
-                        <p id="obsRevisao" class="text-xs font-semibold text-amber-900 mt-0.5">Calculando status da revisão...</p>
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-amber-800">Próxima Revisão</p>
+                        <p id="obsRevisao" class="text-xs font-semibold text-amber-900 mt-0.5">Calculando status...</p>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
-                    <div class="flex flex-col w-full sm:w-auto">
-                        <label class="text-[10px] font-bold uppercase tracking-wider text-amber-800 mb-0.5">Meta Km</label>
-                        <input type="number" id="inputProximaRevisao" placeholder="Ex: 20000" class="rounded-xl border border-amber-300 px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white w-full sm:w-36 shadow-sm placeholder:text-slate-400">
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-bold uppercase text-amber-800">Meta Km</label>
+                        <input type="number" id="inputProximaRevisao" placeholder="Ex: 20000" class="rounded-lg border border-amber-300 px-2 py-1.5 text-xs bg-white w-28">
                     </div>
-                    <div class="flex flex-col w-full sm:w-auto">
-                        <label class="text-[10px] font-bold uppercase tracking-wider text-amber-800 mb-0.5">Data Limite</label>
-                        <input type="date" id="inputDataRevisao" class="rounded-xl border border-amber-300 px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white w-full sm:w-40 shadow-sm">
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-bold uppercase text-amber-800">Data Limite</label>
+                        <input type="date" id="inputDataRevisao" class="rounded-lg border border-amber-300 px-2 py-1.5 text-xs bg-white w-32">
                     </div>
-                    <button onclick="salvarProximaRevisao()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-4 py-2 rounded-xl transition text-sm shadow-sm whitespace-nowrap self-end sm:self-auto mt-auto">
-                        Salvar Meta
-                    </button>
+                    <button onclick="salvarProximaRevisao()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs mt-auto">Salvar</button>
                 </div>
             </div>
 
             <!-- Bloco de Gráficos (Mensal e Categorias) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                        <h2 class="text-base font-semibold text-slate-800 flex items-center gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
                             <i class="fa-solid fa-chart-column text-blue-600"></i> Gastos por Mês
                         </h2>
-                        <div class="flex items-center gap-2">
-                            <select id="filtroAno" onchange="atualizarInterface()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <div class="flex items-center gap-1.5">
+                            <select id="filtroAno" onchange="atualizarInterface()" class="rounded-lg border border-slate-300 px-2 py-1 text-[11px] focus:ring-2 focus:ring-blue-500">
                                 <!-- Preenchido dinamicamente -->
                             </select>
-                            <select id="filtroMes" onchange="atualizarInterface()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <select id="filtroMes" onchange="atualizarInterface()" class="rounded-lg border border-slate-300 px-2 py-1 text-[11px] focus:ring-2 focus:ring-blue-500">
                                 <option value="Todos">Todos</option>
                                 <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option>
                                 <option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option>
@@ -173,21 +168,21 @@
                             </select>
                         </div>
                     </div>
-                    <div class="relative w-full h-52 flex justify-center">
+                    <div class="relative w-full h-44 flex justify-center">
                         <canvas id="graficoMensal"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                    <h2 class="text-base font-semibold text-slate-800 flex items-center gap-2 mb-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5 mb-3">
                         <i class="fa-solid fa-chart-pie text-blue-600"></i> Gastos por Categoria
                     </h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                        <div class="relative w-full h-44 flex justify-center items-center">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                        <div class="relative w-full h-36 flex justify-center items-center">
                             <canvas id="graficoCategorias"></canvas>
                         </div>
-                        <div class="max-h-44 overflow-y-auto pr-2 border-l sm:border-l-slate-100 sm:pl-4">
-                            <div id="legendaLateral" class="flex flex-col gap-1.5 text-xs"></div>
+                        <div class="max-h-36 overflow-y-auto pr-1 border-l sm:border-l-slate-100 sm:pl-3">
+                            <div id="legendaLateral" class="flex flex-col gap-1 text-[11px]"></div>
                         </div>
                     </div>
                 </div>
@@ -195,21 +190,21 @@
         </div>
 
         <!-- ================= ABA 2: ABASTECIMENTOS & LANÇAMENTOS ================= -->
-        <div id="tab-abastecimentos" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div id="tab-abastecimentos" class="tab-content space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                 <!-- Formulário Nova Despesa / Abastecimento -->
-                <div class="md:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 id="formTitle" class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <div class="md:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <h2 id="formTitle" class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-1.5">
                         <i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa
                     </h2>
-                    <form id="expenseForm" onsubmit="salvarDespesa(event)" class="space-y-4">
+                    <form id="expenseForm" onsubmit="salvarDespesa(event)" class="space-y-3">
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Data</label>
-                            <input type="date" id="data" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Data</label>
+                            <input type="date" id="data" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Categoria</label>
-                            <select id="categoria" onchange="verificarCategoriaAbastecimento()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Categoria</label>
+                            <select id="categoria" onchange="verificarCategoriaAbastecimento()" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
                                 <option value="Abastecimento">Abastecimento</option>
                                 <option value="Aquisição de veículo">Aquisição de veículo</option>
                                 <option value="IPVA">IPVA</option>
@@ -225,36 +220,36 @@
                         </div>
 
                         <div id="blocoKm">
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Quilometragem (km)</label>
-                            <input type="number" id="km" placeholder="Ex: 15400" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Quilometragem (km)</label>
+                            <input type="number" id="km" placeholder="Ex: 15400" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Valor (R$)</label>
-                            <input type="number" step="0.01" id="valor" placeholder="0,00" oninput="calcularAbastecimento()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Valor (R$)</label>
+                            <input type="number" step="0.01" id="valor" placeholder="0,00" oninput="calcularAbastecimento()" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <div id="camposAbastecimento" class="grid grid-cols-2 gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                        <div id="camposAbastecimento" class="grid grid-cols-2 gap-2 p-2.5 bg-blue-50/50 rounded-lg border border-blue-100">
                             <div>
-                                <label class="block text-[10px] font-bold uppercase text-blue-700 mb-1">Litros</label>
-                                <input type="number" step="0.001" id="litros" placeholder="Ex: 45.5" oninput="calcularAbastecimento()" class="w-full rounded-lg border border-blue-200 px-2.5 py-1.5 text-xs bg-white">
+                                <label class="block text-[9px] font-bold uppercase text-blue-700 mb-0.5">Litros</label>
+                                <input type="number" step="0.001" id="litros" placeholder="Ex: 45.5" oninput="calcularAbastecimento()" class="w-full rounded border border-blue-200 px-2 py-1 text-xs bg-white">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold uppercase text-blue-700 mb-1">Preço / Litro (R$)</label>
-                                <input type="number" step="0.001" id="precoLitro" placeholder="Ex: 5.89" oninput="calcularAbastecimento()" class="w-full rounded-lg border border-blue-200 px-2.5 py-1.5 text-xs bg-white">
+                                <label class="block text-[9px] font-bold uppercase text-blue-700 mb-0.5">Preço / Litro</label>
+                                <input type="number" step="0.001" id="precoLitro" placeholder="Ex: 5.89" oninput="calcularAbastecimento()" class="w-full rounded border border-blue-200 px-2 py-1 text-xs bg-white">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Descrição</label>
-                            <input type="text" id="descricao" placeholder="Ex: Posto Ipiranga..." required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Descrição</label>
+                            <input type="text" id="descricao" placeholder="Ex: Posto Ipiranga..." required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <div class="flex gap-2 pt-2">
-                            <button type="submit" id="btnSubmit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">
-                                Adicionar Registro
+                        <div class="flex gap-2 pt-1">
+                            <button type="submit" id="btnSubmit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition text-xs shadow-sm">
+                                Adicionar
                             </button>
-                            <button type="button" id="btnCancelarEdicao" onclick="cancelarEdicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-2.5 rounded-xl transition text-sm">
+                            <button type="button" id="btnCancelarEdicao" onclick="cancelarEdicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-2 rounded-lg transition text-xs">
                                 Cancelar
                             </button>
                         </div>
@@ -262,14 +257,14 @@
                 </div>
 
                 <!-- Tabela de Histórico -->
-                <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                        <h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-list text-blue-600"></i> Histórico de Lançamentos
+                <div class="md:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-list text-blue-600"></i> Histórico
                         </h2>
                         <div>
-                            <select id="filtroTabela" onchange="atualizarInterface()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-auto">
-                                <option value="Todas">Todas as Categorias</option>
+                            <select id="filtroTabela" onchange="atualizarInterface()" class="rounded-lg border border-slate-300 px-2 py-1 text-[11px] focus:ring-2 focus:ring-blue-500">
+                                <option value="Todas">Todas Categorias</option>
                                 <option value="Abastecimento">Abastecimento</option>
                                 <option value="Aquisição de veículo">Aquisição de veículo</option>
                                 <option value="IPVA">IPVA</option>
@@ -284,330 +279,330 @@
                             </select>
                         </div>
                     </div>
-                    <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse text-xs">
                             <thead class="sticky top-0 bg-white shadow-sm">
-                                <tr class="border-b border-slate-200 text-xs font-semibold text-slate-400 uppercase">
-                                    <th class="pb-3">Data</th>
-                                    <th class="pb-3">Categoria</th>
-                                    <th class="pb-3">Descrição</th>
-                                    <th class="pb-3">Km</th>
-                                    <th class="pb-3 text-right">Valor</th>
-                                    <th class="pb-3 text-center">Ações</th>
+                                <tr class="border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase">
+                                    <th class="py-2 pr-2">Data</th>
+                                    <th class="py-2 pr-2">Categoria</th>
+                                    <th class="py-2 pr-2">Descrição</th>
+                                    <th class="py-2 pr-2">Km</th>
+                                    <th class="py-2 pr-2 text-right">Valor</th>
+                                    <th class="py-2 text-center">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="expenseTableBody" class="divide-y divide-slate-100 text-sm">
+                            <tbody id="expenseTableBody" class="divide-y divide-slate-100">
                                 <!-- Inserido via JS -->
                             </tbody>
                         </table>
                     </div>
-                    <div id="emptyState" class="text-center py-12 text-slate-400 hidden">
-                        <i class="fa-solid fa-folder-open text-3xl mb-2"></i>
-                        <p class="text-sm">Nenhum registro encontrado.</p>
+                    <div id="emptyState" class="text-center py-8 text-slate-400 hidden text-xs">
+                        <i class="fa-solid fa-folder-open text-2xl mb-1"></i>
+                        <p>Nenhum registro encontrado.</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- ================= ABA 3: AQUISIÇÃO & FINANCIAMENTO ================= -->
-        <div id="tab-aquisicao" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-gradient-to-r from-emerald-100/80 to-teal-50 p-6 rounded-2xl shadow-sm border border-emerald-200 flex flex-col justify-between">
+        <div id="tab-aquisicao" class="tab-content space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="lg:col-span-2 bg-gradient-to-r from-emerald-100/80 to-teal-50 p-4 rounded-xl shadow-sm border border-emerald-200 flex flex-col justify-between">
                     <div>
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-xl bg-emerald-200 text-emerald-800 flex items-center justify-center text-xl shadow-sm shrink-0">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-200 text-emerald-800 flex items-center justify-center text-base shrink-0">
                                     <i class="fa-solid fa-file-invoice-dollar"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold uppercase tracking-wider text-emerald-800">Aquisição de Veículo</p>
-                                    <h3 class="text-lg font-black text-slate-900">Controle de Entrada e Parcelas</h3>
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Aquisição de Veículo</p>
+                                    <h3 class="text-sm font-black text-slate-900">Entrada e Parcelas</h3>
                                 </div>
                             </div>
-                            <button onclick="abrirModalAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2.5 rounded-xl transition text-sm shadow-sm whitespace-nowrap">
-                                <i class="fa-solid fa-gear mr-1"></i> Configurar / Parcelas
+                            <button onclick="abrirModalAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs shadow-sm whitespace-nowrap">
+                                <i class="fa-solid fa-gear mr-1"></i> Configurar
                             </button>
                         </div>
 
-                        <div id="highlightProximaParcelaAquisicao" class="bg-white/90 border border-emerald-200 p-4 rounded-xl mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0">
+                        <div id="highlightProximaParcelaAquisicao" class="bg-white/90 border border-emerald-200 p-3 rounded-xl mb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
                                     <i class="fa-solid fa-calendar-check"></i>
                                 </div>
                                 <div>
-                                    <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Próxima Parcela do Financiamento</p>
-                                    <p id="textoProximaParcelaAquisicao" class="text-xs font-bold text-slate-800 mt-0.5">Nenhuma parcela pendente cadastrada.</p>
+                                    <p class="text-[9px] font-bold uppercase tracking-wider text-emerald-800">Próxima Parcela</p>
+                                    <p id="textoProximaParcelaAquisicao" class="text-xs font-bold text-slate-800">Nenhuma parcela pendente.</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 self-end sm:self-auto">
-                                <button id="btnMarcarPagaProxima" onclick="marcarProximaComoPaga()" class="hidden text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg transition shadow-sm whitespace-nowrap">
-                                    <i class="fa-solid fa-check mr-1"></i> Paga
+                                <button id="btnMarcarPagaProxima" onclick="marcarProximaComoPaga()" class="hidden text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-2.5 py-1 rounded shadow-sm">
+                                    Paga
                                 </button>
-                                <span id="statusPrazoParcelaAquisicao" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap">Sem pendências</span>
+                                <span id="statusPrazoParcelaAquisicao" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Sem pendências</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-emerald-200/60 text-xs">
-                        <div class="bg-white/80 p-3 rounded-xl border border-emerald-100 flex flex-col justify-between">
-                            <span class="font-bold uppercase text-emerald-700">Valor Total</span>
-                            <span id="resumoValorTotal" class="text-sm font-black text-slate-900 mt-1">R$ 0,00</span>
+                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-emerald-200/60 text-xs">
+                        <div class="bg-white/80 p-2.5 rounded-lg border border-emerald-100">
+                            <span class="block text-[9px] font-bold uppercase text-emerald-700">Total</span>
+                            <span id="resumoValorTotal" class="text-xs font-black text-slate-900">R$ 0,00</span>
                         </div>
-                        <div class="bg-white/80 p-3 rounded-xl border border-emerald-100 flex flex-col justify-between">
-                            <span class="font-bold uppercase text-emerald-700">Entrada</span>
-                            <span id="resumoValorEntrada" class="text-sm font-black text-slate-900 mt-1">R$ 0,00</span>
+                        <div class="bg-white/80 p-2.5 rounded-lg border border-emerald-100">
+                            <span class="block text-[9px] font-bold uppercase text-emerald-700">Entrada</span>
+                            <span id="resumoValorEntrada" class="text-xs font-black text-slate-900">R$ 0,00</span>
                         </div>
-                        <div class="bg-white/80 p-3 rounded-xl border border-emerald-100 flex flex-col justify-between">
-                            <span class="font-bold uppercase text-emerald-700">Parcelas Pagas</span>
-                            <span id="resumoStatusParcelas" class="text-sm font-black text-slate-900 mt-1">0 / 0</span>
+                        <div class="bg-white/80 p-2.5 rounded-lg border border-emerald-100">
+                            <span class="block text-[9px] font-bold uppercase text-emerald-700">Pagas</span>
+                            <span id="resumoStatusParcelas" class="text-xs font-black text-slate-900">0 / 0</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="lg:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div>
-                        <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-3">
+                        <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5 mb-2">
                             <i class="fa-solid fa-car text-emerald-600"></i> Progresso da Aquisição
                         </h2>
-                        <div class="relative w-full h-40 flex justify-center items-center">
+                        <div class="relative w-full h-36 flex justify-center items-center">
                             <canvas id="graficoAquisicaoCard"></canvas>
                         </div>
                     </div>
-                    <div class="mt-3 pt-3 border-t border-slate-100">
-                        <div id="legendaAquisicaoCard" class="flex flex-col gap-1 text-xs"></div>
+                    <div class="mt-2 pt-2 border-t border-slate-100">
+                        <div id="legendaAquisicaoCard" class="flex flex-col gap-1 text-[11px]"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- ================= ABA 4: OBRIGAÇÕES & VENCIMENTOS ================= -->
-        <div id="tab-obrigacoes" class="tab-content space-y-6">
-            <div class="bg-gradient-to-r from-indigo-100/80 to-blue-50 p-6 rounded-2xl shadow-sm border border-indigo-200">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-200 text-indigo-800 flex items-center justify-center text-xl shadow-sm shrink-0">
+        <div id="tab-obrigacoes" class="tab-content space-y-4">
+            <div class="bg-gradient-to-r from-indigo-100/80 to-blue-50 p-4 rounded-xl shadow-sm border border-indigo-200">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-200 text-indigo-800 flex items-center justify-center text-base shrink-0">
                             <i class="fa-solid fa-calendar-days"></i>
                         </div>
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-wider text-indigo-800">Controle de Obrigações</p>
-                            <h3 class="text-lg font-black text-slate-900">Vencimento de IPVA, Licenciamento, Seguro e CNHs</h3>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-800">Obrigações</p>
+                            <h3 class="text-sm font-black text-slate-900">IPVA, Licenciamento, Seguro e CNHs</h3>
                         </div>
                     </div>
-                    <button onclick="salvarVencimentos()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2.5 rounded-xl transition text-sm shadow-sm whitespace-nowrap">
+                    <button onclick="salvarVencimentos()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs shadow-sm whitespace-nowrap">
                         Salvar Datas
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-indigo-200/60">
-                    <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-3 pt-3 border-t border-indigo-200/60">
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <label class="block text-[11px] font-bold uppercase text-indigo-700">IPVA</label>
-                                <button type="button" onclick="abrirModalParcelas('ipva', 'IPVA')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-2 py-0.5 rounded-md transition flex items-center gap-1">
-                                    <i class="fa-solid fa-list-check"></i> Parcelas
+                                <label class="block text-[10px] font-bold uppercase text-indigo-700">IPVA</label>
+                                <button type="button" onclick="abrirModalParcelas('ipva', 'IPVA')" class="text-[9px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">
+                                    Parcelas
                                 </button>
                             </div>
-                            <input type="date" id="vencimentoIpva" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                            <input type="date" id="vencimentoIpva" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                         </div>
-                        <span id="statusIpva" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                        <span id="statusIpva" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
                     </div>
-                    <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <label class="block text-[11px] font-bold uppercase text-indigo-700">Licenciamento</label>
-                                <button type="button" onclick="abrirModalParcelas('lic', 'Licenciamento')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-2 py-0.5 rounded-md transition flex items-center gap-1">
-                                    <i class="fa-solid fa-list-check"></i> Parcelas
+                                <label class="block text-[10px] font-bold uppercase text-indigo-700">Licenciamento</label>
+                                <button type="button" onclick="abrirModalParcelas('lic', 'Licenciamento')" class="text-[9px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">
+                                    Parcelas
                                 </button>
                             </div>
-                            <input type="date" id="vencimentoLicenciamento" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                            <input type="date" id="vencimentoLicenciamento" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                         </div>
-                        <span id="statusLicenciamento" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                        <span id="statusLicenciamento" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
                     </div>
-                    <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <label class="block text-[11px] font-bold uppercase text-indigo-700">Seguro</label>
-                                <button type="button" onclick="abrirModalParcelas('seg', 'Seguro')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-2 py-0.5 rounded-md transition flex items-center gap-1">
-                                    <i class="fa-solid fa-list-check"></i> Parcelas
+                                <label class="block text-[10px] font-bold uppercase text-indigo-700">Seguro</label>
+                                <button type="button" onclick="abrirModalParcelas('seg', 'Seguro')" class="text-[9px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">
+                                    Parcelas
                                 </button>
                             </div>
-                            <input type="date" id="vencimentoSeguro" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                            <input type="date" id="vencimentoSeguro" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                         </div>
-                        <span id="statusSeguro" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                        <span id="statusSeguro" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-indigo-200/40">
-                    <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
-                        <label class="block text-[11px] font-bold uppercase text-indigo-700 mb-1">CNH Andrey</label>
-                        <input type="date" id="vencimentoCnhAndrey" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-                        <span id="statusCnhAndrey" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2.5 pt-2.5 border-t border-indigo-200/40">
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
+                        <label class="block text-[10px] font-bold uppercase text-indigo-700 mb-1">CNH Andrey</label>
+                        <input type="date" id="vencimentoCnhAndrey" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                        <span id="statusCnhAndrey" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
                     </div>
-                    <div class="bg-white/80 p-3 rounded-xl border border-indigo-100 flex flex-col justify-between">
-                        <label class="block text-[11px] font-bold uppercase text-indigo-700 mb-1">CNH Tiago</label>
-                        <input type="date" id="vencimentoCnhTiago" onchange="verificarStatusVencimentos()" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-                        <span id="statusCnhTiago" class="text-[10px] font-bold mt-1 text-slate-400">Não informado</span>
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
+                        <label class="block text-[10px] font-bold uppercase text-indigo-700 mb-1">CNH Tiago</label>
+                        <input type="date" id="vencimentoCnhTiago" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                        <span id="statusCnhTiago" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Rodapé com Botão Discreto de Atualizar Cache -->
-        <footer class="text-center pt-8 pb-6">
-            <button id="btnAtualizarCache" onclick="atualizarCache()" class="text-xs text-slate-400 hover:text-slate-600 transition inline-flex items-center gap-1.5 py-1 px-3 rounded-lg hover:bg-slate-200/50">
+        <footer class="text-center pt-6 pb-4">
+            <button id="btnAtualizarCache" onclick="atualizarCache()" class="text-[11px] text-slate-400 hover:text-slate-600 transition inline-flex items-center gap-1 py-1 px-2.5 rounded-lg hover:bg-slate-200/50">
                 <i class="fa-solid fa-rotate"></i> Atualizar Cache
             </button>
         </footer>
     </div>
 
     <!-- Navegação Inferior Fixa Estilo App Mobile -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg z-40 px-4 py-2">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg z-40 px-2 py-1.5">
         <div class="max-w-md mx-auto grid grid-cols-4 gap-1 text-center">
-            <button onclick="mudarAba('painel')" id="nav-painel" class="flex flex-col items-center py-2 text-blue-600 font-semibold transition">
-                <i class="fa-solid fa-chart-pie text-lg mb-0.5"></i>
-                <span class="text-[10px]">Painel</span>
+            <button onclick="mudarAba('painel')" id="nav-painel" class="flex flex-col items-center py-1.5 text-blue-600 font-semibold transition">
+                <i class="fa-solid fa-chart-pie text-base mb-0.5"></i>
+                <span class="text-[9px]">Painel</span>
             </button>
-            <button onclick="mudarAba('abastecimentos')" id="nav-abastecimentos" class="flex flex-col items-center py-2 text-slate-400 hover:text-slate-600 transition">
-                <i class="fa-solid fa-gas-pump text-lg mb-0.5"></i>
-                <span class="text-[10px]">Lançamentos</span>
+            <button onclick="mudarAba('abastecimentos')" id="nav-abastecimentos" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition">
+                <i class="fa-solid fa-gas-pump text-base mb-0.5"></i>
+                <span class="text-[9px]">Lançamentos</span>
             </button>
-            <button onclick="mudarAba('aquisicao')" id="nav-aquisicao" class="flex flex-col items-center py-2 text-slate-400 hover:text-slate-600 transition">
-                <i class="fa-solid fa-file-invoice-dollar text-lg mb-0.5"></i>
-                <span class="text-[10px]">Aquisição</span>
+            <button onclick="mudarAba('aquisicao')" id="nav-aquisicao" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition">
+                <i class="fa-solid fa-file-invoice-dollar text-base mb-0.5"></i>
+                <span class="text-[9px]">Aquisição</span>
             </button>
-            <button onclick="mudarAba('obrigacoes')" id="nav-obrigacoes" class="flex flex-col items-center py-2 text-slate-400 hover:text-slate-600 transition">
-                <i class="fa-solid fa-calendar-days text-lg mb-0.5"></i>
-                <span class="text-[10px]">Obrigações</span>
+            <button onclick="mudarAba('obrigacoes')" id="nav-obrigacoes" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition">
+                <i class="fa-solid fa-calendar-days text-base mb-0.5"></i>
+                <span class="text-[9px]">Obrigações</span>
             </button>
         </div>
     </nav>
 
     <!-- Modais (Novo Veículo, Aquisição, Parcelas) -->
-    <div id="modalNovoVeiculo" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
-                <i class="fa-solid fa-car text-blue-600"></i> Adicionar Novo Veículo
+    <div id="modalNovoVeiculo" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-4 border border-slate-200 text-xs">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5 mb-3">
+                <i class="fa-solid fa-car text-blue-600"></i> Adicionar Veículo
             </h3>
-            <div class="space-y-4">
+            <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Modelo / Nome</label>
-                    <input type="text" id="inputModalModelo" placeholder="Ex: Honda Civic" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Modelo / Nome</label>
+                    <input type="text" id="inputModalModelo" placeholder="Ex: Honda Civic" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Placa</label>
-                    <input type="text" id="inputModalPlaca" maxlength="8" placeholder="ABC-1234" oninput="formatarPlacaModal(this)" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Placa</label>
+                    <input type="text" id="inputModalPlaca" maxlength="8" placeholder="ABC-1234" oninput="formatarPlacaModal(this)" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs uppercase focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="salvarNovoVeiculoModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">Cadastrar</button>
-                    <button type="button" onclick="fecharModalNovoVeiculo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2.5 rounded-xl transition text-sm">Cancelar</button>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="salvarNovoVeiculoModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-xs shadow-sm">Cadastrar</button>
+                    <button type="button" onclick="fecharModalNovoVeiculo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-2 rounded-lg text-xs">Cancelar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modalAquisicao" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-xl w-full p-6 border border-slate-200 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+    <div id="modalAquisicao" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-4 border border-slate-200 max-h-[90vh] overflow-y-auto text-xs">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
                     <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Aquisição do Veículo
                 </h3>
-                <button onclick="fecharModalAquisicao()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="fecharModalAquisicao()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div class="grid grid-cols-2 gap-2 mb-3">
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Valor Total (R$)</label>
-                    <input type="number" step="0.01" id="inputAquisicaoTotal" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white">
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Valor Total (R$)</label>
+                    <input type="number" step="0.01" id="inputAquisicaoTotal" class="w-full rounded-lg border border-slate-300 px-2.5 py-1 text-xs bg-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Entrada (R$)</label>
-                    <input type="number" step="0.01" id="inputAquisicaoEntrada" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white">
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Entrada (R$)</label>
+                    <input type="number" step="0.01" id="inputAquisicaoEntrada" class="w-full rounded-lg border border-slate-300 px-2.5 py-1 text-xs bg-white">
                 </div>
             </div>
-            <div class="mb-4">
-                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Data da Entrada</label>
-                <input type="date" id="inputAquisicaoDataEntrada" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white">
+            <div class="mb-3">
+                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Data da Entrada</label>
+                <input type="date" id="inputAquisicaoDataEntrada" class="w-full rounded-lg border border-slate-300 px-2.5 py-1 text-xs bg-white">
             </div>
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 space-y-3">
-                <h4 id="tituloFormParcelaAquisicao" class="text-xs font-bold uppercase text-slate-700">Adicionar Parcela</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-3 space-y-2">
+                <h4 id="tituloFormParcelaAquisicao" class="text-[10px] font-bold uppercase text-slate-700">Adicionar Parcela</h4>
+                <div class="grid grid-cols-3 gap-1.5">
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nome</label>
-                        <input type="text" id="inputParcelaAquisicaoNome" placeholder="Ex: Parcela 1" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Nome</label>
+                        <input type="text" id="inputParcelaAquisicaoNome" placeholder="Ex: P1" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Vencimento</label>
-                        <input type="date" id="inputParcelaAquisicaoData" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Vencimento</label>
+                        <input type="date" id="inputParcelaAquisicaoData" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Valor (R$)</label>
-                        <input type="number" step="0.01" id="inputParcelaAquisicaoValor" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Valor</label>
+                        <input type="number" step="0.01" id="inputParcelaAquisicaoValor" placeholder="0,00" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <button type="button" id="btnSalvarParcelaAquisicao" onclick="adicionarOuAtualizarParcelaAquisicao()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Incluir</button>
-                    <button type="button" id="btnCancelarEdicaoParcelaAquisicao" onclick="cancelarEdicaoParcelaAquisicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-3 py-2 rounded-lg transition text-xs">Cancelar</button>
+                    <button type="button" id="btnSalvarParcelaAquisicao" onclick="adicionarOuAtualizarParcelaAquisicao()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1.5 rounded text-xs shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Incluir</button>
+                    <button type="button" id="btnCancelarEdicaoParcelaAquisicao" onclick="cancelarEdicaoParcelaAquisicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-2 py-1.5 rounded text-xs">Cancelar</button>
                 </div>
             </div>
-            <div class="max-h-48 overflow-y-auto mb-4 border border-slate-200 rounded-xl">
-                <table class="w-full text-left border-collapse text-xs">
+            <div class="max-h-40 overflow-y-auto mb-3 border border-slate-200 rounded-lg">
+                <table class="w-full text-left border-collapse text-[11px]">
                     <thead>
-                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-semibold">
-                            <th class="p-2.5">Parcela</th><th class="p-2.5">Vencimento</th><th class="p-2.5">Valor</th><th class="p-2.5 text-center">Status</th><th class="p-2.5 text-center">Ações</th>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-bold">
+                            <th class="p-2">Parcela</th><th class="p-2">Vencimento</th><th class="p-2">Valor</th><th class="p-2 text-center">Status</th><th class="p-2 text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabelaParcelasAquisicaoCorpo" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
-            <div id="emptyParcelasAquisicao" class="text-center py-4 text-slate-400 text-xs hidden">Nenhuma parcela cadastrada.</div>
-            <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
-                <button type="button" onclick="salvarConfiguracaoAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-2.5 rounded-xl transition text-xs shadow-sm">Salvar e Concluir</button>
+            <div id="emptyParcelasAquisicao" class="text-center py-2 text-slate-400 text-[11px] hidden">Nenhuma parcela.</div>
+            <div class="flex justify-end pt-2 border-t border-slate-200">
+                <button type="button" onclick="salvarConfiguracaoAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg text-xs shadow-sm">Salvar e Concluir</button>
             </div>
         </div>
     </div>
 
-    <div id="modalParcelas" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 border border-slate-200">
-            <div class="flex items-center justify-between mb-4">
-                <h3 id="tituloModalParcelas" class="text-lg font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-600"></i> Gerenciar Parcelas</h3>
-                <button onclick="fecharModalParcelas()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <div id="modalParcelas" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-4 border border-slate-200 text-xs">
+            <div class="flex items-center justify-between mb-3">
+                <h3 id="tituloModalParcelas" class="text-sm font-bold text-slate-900 flex items-center gap-1.5"><i class="fa-solid fa-list-check text-indigo-600"></i> Parcelas</h3>
+                <button onclick="fecharModalParcelas()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 space-y-3">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-3 space-y-2">
+                <div class="grid grid-cols-3 gap-1.5">
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nome</label>
-                        <input type="text" id="inputParcelaNome" placeholder="Ex: Parcela 1" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Nome</label>
+                        <input type="text" id="inputParcelaNome" placeholder="Ex: P1" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Vencimento</label>
-                        <input type="date" id="inputParcelaData" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Vencimento</label>
+                        <input type="date" id="inputParcelaData" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Valor (R$)</label>
-                        <input type="number" step="0.01" id="inputParcelaValor" placeholder="0,00" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Valor</label>
+                        <input type="number" step="0.01" id="inputParcelaValor" placeholder="0,00" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
                     </div>
                 </div>
-                <button type="button" onclick="adicionarParcelaModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Incluir Parcela</button>
+                <button type="button" onclick="adicionarParcelaModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded text-xs shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Incluir Parcela</button>
             </div>
-            <div class="max-h-48 overflow-y-auto mb-4 border border-slate-200 rounded-xl">
-                <table class="w-full text-left border-collapse text-xs">
+            <div class="max-h-40 overflow-y-auto mb-3 border border-slate-200 rounded-lg">
+                <table class="w-full text-left border-collapse text-[11px]">
                     <thead>
-                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-semibold">
-                            <th class="p-2.5">Parcela</th><th class="p-2.5">Vencimento</th><th class="p-2.5">Valor</th><th class="p-2.5 text-center">Ações</th>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-bold">
+                            <th class="p-2">Parcela</th><th class="p-2">Vencimento</th><th class="p-2">Valor</th><th class="p-2 text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabelaParcelasCorpo" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
-            <div id="emptyParcelas" class="text-center py-6 text-slate-400 text-xs hidden">Nenhuma parcela cadastrada.</div>
-            <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
-                <button type="button" onclick="fecharModalParcelas()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2 rounded-xl transition text-xs shadow-sm">Concluir</button>
+            <div id="emptyParcelas" class="text-center py-4 text-slate-400 text-[11px] hidden">Nenhuma parcela.</div>
+            <div class="flex justify-end pt-2 border-t border-slate-200">
+                <button type="button" onclick="fecharModalParcelas()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-1.5 rounded text-xs shadow-sm">Concluir</button>
             </div>
         </div>
     </div>
 
     <!-- Botão de Dark Mode -->
     <button id="btnToggleDark" onclick="toggleDarkMode()" 
-        class="fixed bottom-20 right-6 p-3.5 bg-slate-800 text-white rounded-full shadow-lg hover:bg-slate-700 transition z-50">
+        class="fixed bottom-16 right-4 p-3 bg-slate-800 text-white rounded-full shadow-lg hover:bg-slate-700 transition z-50 text-xs">
         <i class="fa-solid fa-moon"></i>
     </button>
 
@@ -619,9 +614,9 @@
             ['painel', 'abastecimentos', 'aquisicao', 'obrigacoes'].forEach(id => {
                 const btn = document.getElementById('nav-' + id);
                 if (id === abaId) {
-                    btn.className = "flex flex-col items-center py-2 text-blue-600 font-semibold transition";
+                    btn.className = "flex flex-col items-center py-1.5 text-blue-600 font-semibold transition";
                 } else {
-                    btn.className = "flex flex-col items-center py-2 text-slate-400 hover:text-slate-600 transition";
+                    btn.className = "flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition";
                 }
             });
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -898,13 +893,13 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50";
                 tr.innerHTML = `
-                    <td class="p-2.5 font-medium text-slate-800">${p.nome}</td>
-                    <td class="p-2.5 text-slate-600">${formatarDataSimples(p.data)}</td>
-                    <td class="p-2.5 text-slate-600">${formatarMoeda(p.valor)}</td>
-                    <td class="p-2.5 text-center">
-                        <button onclick="togglePagoParcelaAquisicao(${p.id})" class="px-2 py-1 rounded text-[10px] font-bold ${p.pago ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${p.pago ? 'Pago' : 'Pendente'}</button>
+                    <td class="p-2 font-medium text-slate-800">${p.nome}</td>
+                    <td class="p-2 text-slate-600">${formatarDataSimples(p.data)}</td>
+                    <td class="p-2 text-slate-600">${formatarMoeda(p.valor)}</td>
+                    <td class="p-2 text-center">
+                        <button onclick="togglePagoParcelaAquisicao(${p.id})" class="px-2 py-0.5 rounded text-[9px] font-bold ${p.pago ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${p.pago ? 'Pago' : 'Pendente'}</button>
                     </td>
-                    <td class="p-2.5 text-center whitespace-nowrap">
+                    <td class="p-2 text-center whitespace-nowrap">
                         <button onclick="carregarEdicaoParcelaAquisicao(${p.id})" class="text-slate-400 hover:text-amber-600 p-1 mr-1"><i class="fa-solid fa-pen"></i></button>
                         <button onclick="excluirParcelaAquisicaoModal(${p.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button>
                     </td>`;
@@ -955,7 +950,7 @@
                 btnMarcarPaga.classList.add('hidden');
                 textoEl.innerText = totalParcelas === 0 ? "Nenhuma parcela cadastrada." : "Todas as parcelas quitadas!";
                 statusBadgeEl.innerText = totalParcelas === 0 ? "Sem parcelas" : "Quitado";
-                statusBadgeEl.className = totalParcelas === 0 ? "text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap" : "text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 whitespace-nowrap";
+                statusBadgeEl.className = totalParcelas === 0 ? "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap" : "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 whitespace-nowrap";
             } else {
                 pendentes.sort((a, b) => new Date(a.data) - new Date(b.data));
                 let proxima = pendentes[0];
@@ -963,7 +958,7 @@
                 let statusInfo = calcularStatusDias(proxima.data);
                 textoEl.innerHTML = `<strong>${proxima.nome}</strong> (${formatarMoeda(proxima.valor)}) — Vencimento em <strong>${formatarDataSimples(proxima.data)}</strong>`;
                 statusBadgeEl.innerText = statusInfo.textoCurto;
-                statusBadgeEl.className = `text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap ${statusInfo.classeBadge}`;
+                statusBadgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${statusInfo.classeBadge}`;
                 btnMarcarPaga.classList.remove('hidden');
             }
         }
@@ -1020,10 +1015,10 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50";
                 tr.innerHTML = `
-                    <td class="p-2.5 font-medium text-slate-800">${p.nome}</td>
-                    <td class="p-2.5 text-slate-600">${formatarDataSimples(p.data)}</td>
-                    <td class="p-2.5 text-slate-600">${p.valor > 0 ? formatarMoeda(p.valor) : '-'}</td>
-                    <td class="p-2.5 text-center"><button onclick="excluirParcelaModal(${p.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
+                    <td class="p-2 font-medium text-slate-800">${p.nome}</td>
+                    <td class="p-2 text-slate-600">${formatarDataSimples(p.data)}</td>
+                    <td class="p-2 text-slate-600">${p.valor > 0 ? formatarMoeda(p.valor) : '-'}</td>
+                    <td class="p-2 text-center"><button onclick="excluirParcelaModal(${p.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -1127,7 +1122,7 @@
                 const res = calcularStatusDias(val);
                 const el = document.getElementById('status' + tipo);
                 el.innerText = res.texto;
-                el.className = `text-[10px] font-bold mt-1 ${res.classe}`;
+                el.className = `text-[9px] font-bold mt-1 ${res.classe}`;
             });
         }
 
@@ -1141,15 +1136,15 @@
             let statusKm = metaKmInput ? { diff: parseInt(metaKmInput) - maiorKm, meta: parseInt(metaKmInput) } : null;
             let statusData = dataLimiteInput ? { days: Math.ceil((new Date(dataLimiteInput) - new Date('2026-08-17')) / (1000*60*60*24)), dataStr: formatarDataSimples(dataLimiteInput) } : null;
 
-            if (!statusKm && !statusData) { obsEl.innerText = "Defina meta de km e/ou data limite."; return; }
+            if (!statusKm && !statusData) { obsEl.innerText = "Defina meta de km e/ou data."; return; }
             let mensagem = "";
             if (statusKm && statusData) {
-                if (statusKm.diff <= 0 || statusData.days <= 0) mensagem = "Atenção: Meta de revisão atingida!";
-                else mensagem = `Faltam ${statusKm.diff.toLocaleString()} km ou até ${statusData.dataStr} (${statusData.days} dias).`;
+                if (statusKm.diff <= 0 || statusData.days <= 0) mensagem = "Atenção: Meta atingida!";
+                else mensagem = `Faltam ${statusKm.diff.toLocaleString()} km ou até ${statusData.dataStr} (${statusData.days}d).`;
             } else if (statusKm) {
                 mensagem = statusKm.diff >= 0 ? `Faltam ${statusKm.diff.toLocaleString()} km.` : `Meta ultrapassada em ${Math.abs(statusKm.diff).toLocaleString()} km!`;
             } else if (statusData) {
-                mensagem = statusData.days >= 0 ? `Faltam ${statusData.days} dias para a data limite.` : `Data limite vencida!`;
+                mensagem = statusData.days >= 0 ? `Faltam ${statusData.days} dias.` : `Data vencida!`;
             }
             obsEl.innerText = mensagem;
         }
@@ -1217,8 +1212,8 @@
             document.getElementById('descricao').value = despesa.descricao;
             document.getElementById('valor').value = despesa.valor;
             idEditando = id;
-            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-600"></i> Editar Despesa';
-            document.getElementById('btnSubmit').innerText = 'Salvar Alteração';
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-600"></i> Editar';
+            document.getElementById('btnSubmit').innerText = 'Salvar';
             document.getElementById('btnCancelarEdicao').classList.remove('hidden');
         }
 
@@ -1228,7 +1223,7 @@
             document.getElementById('data').valueAsDate = new Date('2026-08-17');
             verificarCategoriaAbastecimento();
             document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa';
-            document.getElementById('btnSubmit').innerText = 'Adicionar Registro';
+            document.getElementById('btnSubmit').innerText = 'Adicionar';
             document.getElementById('btnCancelarEdicao').classList.add('hidden');
         }
 
@@ -1302,15 +1297,15 @@
             filtradasTabela.forEach(d => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
-                const infoAbast = (d.categoria === 'Abastecimento' && d.litros > 0) ? `<div class="text-[11px] text-slate-400">${d.litros} L • R$ ${(d.precoLitro||0).toFixed(2)}/L</div>` : '';
+                const infoAbast = (d.categoria === 'Abastecimento' && d.litros > 0) ? `<div class="text-[10px] text-slate-400">${d.litros} L • R$ ${(d.precoLitro||0).toFixed(2)}/L</div>` : '';
                 tr.innerHTML = `
-                    <td class="py-3 pr-3 text-slate-600">${formatarData(d.data)}</td>
-                    <td class="py-3 pr-3"><span class="px-2.5 py-1 text-xs rounded-full font-medium ${obterEstiloCategoria(d.categoria)}">${d.categoria}</span></td>
-                    <td class="py-3 pr-3 font-medium text-slate-800">${d.descricao}${infoAbast}</td>
-                    <td class="py-3 pr-3 text-slate-600">${d.categoria === 'Abastecimento' && d.km > 0 ? d.km.toLocaleString() + ' km' : '-'}</td>
-                    <td class="py-3 pr-3 text-right font-semibold text-slate-900">${formatarMoeda(d.valor)}</td>
-                    <td class="py-3 text-center whitespace-nowrap">
-                        <button onclick="carregarEdicao(${d.id})" class="text-slate-400 hover:text-blue-600 p-1 mr-1"><i class="fa-solid fa-pen"></i></button>
+                    <td class="py-2 pr-2 text-slate-600">${formatarData(d.data)}</td>
+                    <td class="py-2 pr-2"><span class="px-2 py-0.5 text-[10px] rounded-full font-medium ${obterEstiloCategoria(d.categoria)}">${d.categoria}</span></td>
+                    <td class="py-2 pr-2 font-medium text-slate-800">${d.descricao}${infoAbast}</td>
+                    <td class="py-2 pr-2 text-slate-600">${d.categoria === 'Abastecimento' && d.km > 0 ? d.km.toLocaleString() + ' km' : '-'}</td>
+                    <td class="py-2 pr-2 text-right font-semibold text-slate-900">${formatarMoeda(d.valor)}</td>
+                    <td class="py-2 text-center whitespace-nowrap">
+                        <button onclick="carregarEdicao(${d.id})" class="text-slate-400 hover:text-blue-600 p-1 mr-0.5"><i class="fa-solid fa-pen"></i></button>
                         <button onclick="excluirDespesa(${d.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button>
                     </td>`;
                 tbody.appendChild(tr);
@@ -1358,19 +1353,19 @@
             legenda.innerHTML = '';
             listaCategorias.forEach((cat, idx) => {
                 if (cat === 'Aquisição de veículo') return;
-                legenda.innerHTML += `<div class="flex items-center gap-2 py-1 border-b border-slate-100"><span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${coresCategorias[idx]};"></span><span class="text-slate-700 truncate">${cat}</span></div>`;
+                legenda.innerHTML += `<div class="flex items-center gap-1.5 py-0.5 border-b border-slate-100"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${coresCategorias[idx]};"></span><span class="text-slate-700 truncate">${cat}</span></div>`;
             });
 
             if (meuGrafico) meuGrafico.destroy();
             meuGrafico = new Chart(ctx, {
                 type: 'doughnut',
-                data: { labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 2, borderColor: '#ffffff' }] },
+                data: { labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 1, borderColor: '#ffffff' }] },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         datalabels: {
-                            color: '#1e293b', font: { weight: 'bold', size: 10 },
+                            color: '#1e293b', font: { weight: 'bold', size: 9 },
                             formatter: (v, ctx) => (v / ctx.dataset.data.reduce((a,b)=>a+b,0) < 0.05 || labels[0] === 'Sem registros') ? '' : formatarMoedaInteira(v)
                         },
                         tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${formatarMoedaInteira(ctx.raw)}` } }
@@ -1394,13 +1389,13 @@
             if (totalV === 0 && pago === 0) { labels = ['Não configurado']; dados = [1]; cores = ['#e2e8f0']; }
 
             document.getElementById('legendaAquisicaoCard').innerHTML = `
-                <div class="flex items-center justify-between py-0.5 border-b border-slate-100"><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span><span>Pago</span></div><span class="font-bold">${formatarMoeda(pago)}</span></div>
-                <div class="flex items-center justify-between py-0.5"><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span><span>Restante</span></div><span class="font-bold">${formatarMoeda(restante)}</span></div>`;
+                <div class="flex items-center justify-between py-0.5 border-b border-slate-100"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span>Pago</span></div><span class="font-bold">${formatarMoeda(pago)}</span></div>
+                <div class="flex items-center justify-between py-0.5"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span><span>Restante</span></div><span class="font-bold">${formatarMoeda(restante)}</span></div>`;
 
             if (meuGraficoAquisicaoCard) meuGraficoAquisicaoCard.destroy();
             meuGraficoAquisicaoCard = new Chart(ctx, {
                 type: 'doughnut',
-                data: { labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 2, borderColor: '#ffffff' }] },
+                data: { labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 1, borderColor: '#ffffff' }] },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
@@ -1433,15 +1428,15 @@
             if (meuGraficoMensal) meuGraficoMensal.destroy();
             meuGraficoMensal = new Chart(ctx, {
                 type: 'bar',
-                data: { labels, datasets: [{ data: dados, backgroundColor: '#2563eb', borderRadius: 6 }] },
+                data: { labels, datasets: [{ data: dados, backgroundColor: '#2563eb', borderRadius: 4 }] },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        datalabels: { color: '#1e293b', font: { weight: 'bold', size: 10 }, anchor: 'end', align: 'top', formatter: v => v === 0 ? '' : formatarMoedaInteira(v) },
+                        datalabels: { color: '#1e293b', font: { weight: 'bold', size: 9 }, anchor: 'end', align: 'top', formatter: v => v === 0 ? '' : formatarMoedaInteira(v) },
                         tooltip: { callbacks: { label: ctx => ` Gasto: ${formatarMoedaInteira(ctx.raw)}` } }
                     },
-                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+                    scales: { y: { beginAtZero: true, grid: { display: false }, ticks: { font: { size: 9 } } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } }
                 },
                 plugins: [ChartDataLabels]
             });
