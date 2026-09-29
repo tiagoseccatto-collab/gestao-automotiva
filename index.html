@@ -72,6 +72,9 @@
                     <button onclick="abrirModalNovoVeiculo()" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition text-xs shadow-sm" title="Adicionar Novo Veículo">
                         <i class="fa-solid fa-plus"></i>
                     </button>
+                    <button onclick="excluirVeiculoAtivo()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 p-2 rounded-lg transition text-xs shadow-sm" title="Excluir Veículo Atual">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -616,7 +619,11 @@
     </button>
 
     <script>
+        let abaAtivaAtual = 'painel';
+
         function mudarAba(abaId) {
+            abaAtivaAtual = abaId;
+            localStorage.setItem('car_last_tab', abaId);
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + abaId).classList.add('active');
 
@@ -646,7 +653,9 @@
         }
 
         function atualizarCache() {
+            const abaAtual = document.querySelector('.tab-content.active').id.replace('tab-', '');
             localStorage.clear();
+            localStorage.setItem('car_last_tab', abaAtual);
             location.reload();
         }
 
@@ -829,6 +838,36 @@
         }
 
         function fecharModalNovoVeiculo() { document.getElementById('modalNovoVeiculo').classList.add('hidden'); }
+
+        function excluirVeiculoAtivo() {
+            if (veiculos.length <= 1) {
+                alert("Você não pode excluir o único veículo cadastrado.");
+                return;
+            }
+            const veiculoObj = veiculos.find(v => v.id === veiculoAtivoId);
+            const nomeVeiculo = veiculoObj ? veiculoObj.nome : "este veículo";
+
+            if (confirm(`Tem certeza que deseja excluir "${nomeVeiculo}" e todos os seus dados e despesas?`)) {
+                // Remove das despesas
+                delete todasDespesas[veiculoAtivoId];
+                // Remove da lista de veículos
+                veiculos = veiculos.filter(v => v.id !== veiculoAtivoId);
+                
+                // Define o primeiro veículo restante como ativo
+                veiculoAtivoId = veiculos[0].id;
+
+                localStorage.setItem('car_fleet', JSON.stringify(veiculos));
+                localStorage.setItem('car_fleet_expenses', JSON.stringify(todasDespesas));
+                localStorage.setItem('car_active_id', veiculoAtivoId);
+
+                popularSeletorVeiculos();
+                carregarConfiguracoesVeiculo();
+                popularFiltroAnos();
+                atualizarInterface();
+                salvarNoFirebase();
+                alert("Veículo excluído com sucesso!");
+            }
+        }
 
         function abrirModalAquisicao() {
             document.getElementById('inputAquisicaoTotal').value = localStorage.getItem(`car_aq_total_${veiculoAtivoId}`) || '';
@@ -1471,11 +1510,17 @@
             });
         }
 
-        popularSeletorVeiculos();
-        carregarConfiguracoesVeiculo();
-        popularFiltroAnos();
-        verificarCategoriaAbastecimento();
-        atualizarInterface();
+        // Restaura a última aba aberta ao iniciar
+        const ultimaAba = localStorage.getItem('car_last_tab');
+        if (ultimaAba) {
+            mudarAba(ultimaAba);
+        } else {
+            popularSeletorVeiculos();
+            carregarConfiguracoesVeiculo();
+            popularFiltroAnos();
+            verificarCategoriaAbastecimento();
+            atualizarInterface();
+        }
     </script>
 </body>
 </html>
