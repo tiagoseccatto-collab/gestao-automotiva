@@ -53,7 +53,7 @@
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-24 md:pb-8 p-3 md:p-6 flex flex-col justify-between text-sm">
 
     <div class="max-w-4xl mx-auto w-full">
-        <!-- Cabeçalho Compacto para Celular (Sem botão Resetar e Sem Data Compra) -->
+        <!-- Cabeçalho Compacto para Celular -->
         <header class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -317,7 +317,7 @@
                             </button>
                         </div>
 
-                        <!-- Campo Data Compra agora posicionado aqui na aba Aquisição -->
+                        <!-- Data Compra posicionado na aba Aquisição -->
                         <div class="bg-white/90 border border-emerald-200 p-3 rounded-xl mb-3 flex items-center justify-between gap-2 shadow-sm">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
@@ -651,29 +651,61 @@
         }
 
         let veiculos = JSON.parse(localStorage.getItem('car_fleet')) || [
-            { id: 'veiculo_1', nome: 'Fiat Fastback (FUZ-2G43)' }
+            { id: 'veiculo_1', nome: 'Fiat Fastback Limited Edition 1.3' }
         ];
         let veiculoAtivoId = localStorage.getItem('car_active_id') || veiculos[0].id;
 
         let todasDespesas = JSON.parse(localStorage.getItem('car_fleet_expenses')) || {
             'veiculo_1': [
-                { id: 1723800000001, data: '2025-09-15', categoria: 'Abastecimento', descricao: 'Posto Inicial 2025', valor: 1500.00, km: 14000, litros: 0, precoLitro: 0 },
-                { id: 1723800000002, data: '2025-10-10', categoria: 'Lavagem', descricao: 'Lavagem Completa', valor: 120.00, km: 0 },
-                { id: 1723800000003, data: '2026-08-01', categoria: 'Abastecimento', descricao: 'Posto Shell - Gasolina', valor: 250.00, km: 15200, litros: 42.0, precoLitro: 5.95 },
-                { id: 1723800000004, data: '2026-08-10', categoria: 'Revisão', descricao: 'Troca de óleo e filtros', valor: 400.00, km: 0 },
-                { id: 1723800000005, data: '2026-08-15', categoria: 'Seguro', descricao: 'Parcela Seguro Auto', valor: 180.00, km: 0 }
+                { id: 1723800000001, data: '2023-07-07', categoria: 'Aquisição de veículo', descricao: 'Entrada Veículo', valor: 93900.00, km: 0, litros: 0, precoLitro: 0 }
             ]
         };
 
+        // Carga automática dos dados de Aquisição / Financiamento (Fastback 1.3)
         if (!localStorage.getItem(`car_aq_total_${veiculoAtivoId}`)) {
-            localStorage.setItem(`car_aq_total_${veiculoAtivoId}`, '100000');
-            localStorage.setItem(`car_aq_entrada_${veiculoAtivoId}`, '90000');
-            localStorage.setItem(`car_aq_data_entrada_${veiculoAtivoId}`, '2026-08-17');
-            const exemploParcelas = [
-                { id: 1, nome: 'Parcela 1', data: '2026-08-14', valor: 5000, pago: false },
-                { id: 2, nome: 'Parcela 2', data: '2026-09-14', valor: 5000, pago: false }
+            localStorage.setItem(`car_aq_total_${veiculoAtivoId}`, '158670.97');
+            localStorage.setItem(`car_aq_entrada_${veiculoAtivoId}`, '93900.00');
+            localStorage.setItem(`car_aq_data_entrada_${veiculoAtivoId}`, '2023-07-07');
+            
+            const parcelasFinanciamentoAutomaticas = [
+                { id: 1, nome: 'Parcela 1', data: '2023-08-07', valor: 1799.19, pago: true },
+                { id: 2, nome: 'Parcela 2', data: '2023-09-07', valor: 1799.19, pago: true },
+                { id: 3, nome: 'Parcela 3', data: '2023-10-07', valor: 1799.19, pago: true },
+                { id: 4, nome: 'Parcela 4', data: '2023-11-07', valor: 1799.19, pago: true },
+                { id: 5, nome: 'Parcela 5', data: '2023-12-07', valor: 1799.19, pago: true },
+                { id: 6, nome: 'Parcela 6', data: '2024-01-07', valor: 1799.19, pago: true },
+                { id: 7, nome: 'Parcela 7', data: '2024-02-07', valor: 1799.19, pago: true },
+                { id: 8, nome: 'Parcela 8', data: '2024-03-07', valor: 1799.19, pago: true },
+                { id: 9, nome: 'Parcela 9', data: '2024-04-07', valor: 1799.19, pago: true },
+                { id: 10, nome: 'Parcela 10', data: '2024-05-07', valor: 1799.19, pago: true },
+                { id: 11, nome: 'Parcela 11', data: '2024-06-07', valor: 1799.19, pago: true },
+                { id: 12, nome: 'Parcela 12', data: '2024-07-07', valor: 1799.19, pago: true },
+                { id: 13, nome: 'Parcela 13', data: '2024-08-07', valor: 1799.19, pago: true },
+                { id: 14, nome: 'Parcela 14', data: '2024-09-07', valor: 1799.19, pago: true },
+                { id: 15, nome: 'Parcela 15', data: '2024-10-07', valor: 1799.19, pago: true },
+                { id: 16, nome: 'Parcela 16', data: '2024-11-07', valor: 1799.19, pago: true },
+                { id: 17, nome: 'Parcela 17', data: '2024-12-07', valor: 1799.19, pago: true },
+                { id: 18, nome: 'Parcela 18', data: '2025-01-07', valor: 1799.19, pago: true },
+                { id: 19, nome: 'Parcela 19', data: '2025-02-07', valor: 1799.19, pago: true },
+                { id: 20, nome: 'Parcela 20', data: '2025-03-07', valor: 1799.19, pago: true },
+                { id: 21, nome: 'Parcela 21', data: '2025-04-07', valor: 1799.19, pago: true },
+                { id: 22, nome: 'Parcela 22', data: '2025-05-07', valor: 1799.19, pago: true },
+                { id: 23, nome: 'Parcela 23', data: '2025-06-07', valor: 1799.19, pago: true },
+                { id: 24, nome: 'Parcela 24', data: '2025-07-07', valor: 1799.19, pago: true },
+                { id: 25, nome: 'Parcela 25', data: '2025-08-07', valor: 1799.19, pago: true },
+                { id: 26, nome: 'Parcela 26', data: '2025-09-07', valor: 1799.19, pago: true },
+                { id: 27, nome: 'Parcela 27', data: '2025-10-07', valor: 1799.19, pago: true },
+                { id: 28, nome: 'Parcela 28', data: '2025-11-07', valor: 1799.19, pago: true },
+                { id: 29, nome: 'Parcela 29', data: '2025-12-07', valor: 1799.19, pago: true },
+                { id: 30, nome: 'Parcela 30', data: '2026-01-07', valor: 1799.19, pago: true },
+                { id: 31, nome: 'Parcela 31', data: '2026-02-07', valor: 1799.19, pago: true },
+                { id: 32, nome: 'Parcela 32', data: '2026-03-07', valor: 1799.19, pago: true },
+                { id: 33, nome: 'Parcela 33', data: '2026-04-07', valor: 1799.19, pago: true },
+                { id: 34, nome: 'Parcela 34', data: '2026-05-07', valor: 1799.19, pago: true },
+                { id: 35, nome: 'Parcela 35', data: '2026-06-07', valor: 1799.19, pago: true },
+                { id: 36, nome: 'Parcela 36', data: '2026-07-07', valor: 1799.19, pago: true }
             ];
-            localStorage.setItem(`car_parcelas_aquisicao_${veiculoAtivoId}`, JSON.stringify(exemploParcelas));
+            localStorage.setItem(`car_parcelas_aquisicao_${veiculoAtivoId}`, JSON.stringify(parcelasFinanciamentoAutomaticas));
         }
 
         let tipoParcelaAtual = null;
@@ -1278,7 +1310,7 @@
             despesas.forEach(d => {
                 total += d.valor;
                 if (d.km > maiorKm) maiorKm = d.km;
-                if (d.categoria === 'Abastecimento') {
+                if (d.categoria === 'Abastecimento' || d.categoria === 'Sem Parar') {
                     gastosAbast += d.valor;
                     if (d.litros > 0) totalLitros += d.litros;
                     if (d.km > maiorKmAbast) maiorKmAbast = d.km;
