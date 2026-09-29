@@ -636,7 +636,6 @@
                 }
             });
 
-            // Força o redesenho imediato dos gráficos da aba correspondente
             setTimeout(() => {
                 if (abaId === 'painel') {
                     atualizarGraficoCategoria();
@@ -665,7 +664,6 @@
 
         function atualizarCache() {
             const abaAtual = document.querySelector('.tab-content.active').id.replace('tab-', '');
-            localStorage.clear();
             localStorage.setItem('car_last_tab', abaAtual);
             location.reload();
         }
@@ -748,6 +746,17 @@
 
         document.getElementById('data').valueAsDate = new Date('2026-08-17');
 
+        function inicializarEstadoApp() {
+            popularSeletorVeiculos();
+            carregarConfiguracoesVeiculo();
+            popularFiltroAnos();
+            verificarCategoriaAbastecimento();
+            atualizarInterface();
+            
+            const ultimaAba = localStorage.getItem('car_last_tab') || 'painel';
+            mudarAba(ultimaAba);
+        }
+
         async function salvarNoFirebase() {
             if (!window.db) return;
             try {
@@ -759,7 +768,10 @@
         }
 
         async function carregarDoFirebase() {
-            if (!window.db) return;
+            if (!window.db) {
+                inicializarEstadoApp();
+                return;
+            }
             try {
                 const docSnap = await window.FirestoreSDK.getDoc(window.FirestoreSDK.doc(window.db, "gestao", "dados_app"));
                 if (docSnap.exists()) {
@@ -767,15 +779,11 @@
                     if (data.veiculos) veiculos = data.veiculos;
                     if (data.veiculoAtivoId) veiculoAtivoId = data.veiculoAtivoId;
                     if (data.todasDespesas) todasDespesas = data.todasDespesas;
-                    
-                    popularSeletorVeiculos();
-                    carregarConfiguracoesVeiculo();
-                    popularFiltroAnos();
-                    atualizarInterface();
                 }
             } catch (e) {
                 console.error("Erro ao carregar do Firestore:", e);
             }
+            inicializarEstadoApp();
         }
 
         function verificarCategoriaAbastecimento() {
@@ -1243,17 +1251,23 @@
 
         function popularFiltroAnos() {
             const selectAno = document.getElementById('filtroAno');
+            const anoSelecionadoAnterior = selectAno.value;
             let anos = new Set([new Date('2026-08-17').getFullYear().toString()]);
             getDespesasAtuais().forEach(d => { if (d.data) anos.add(d.data.split('-')[0]); });
             const ordenados = Array.from(anos).sort((a,b) => b-a);
-            const atual = selectAno.value;
+            
             selectAno.innerHTML = '';
             ordenados.forEach(ano => {
                 const opt = document.createElement('option');
                 opt.value = ano; opt.textContent = ano;
                 selectAno.appendChild(opt);
             });
-            if (ordenados.includes(atual)) selectAno.value = atual;
+
+            if (ordenados.includes(anoSelecionadoAnterior)) {
+                selectAno.value = anoSelecionadoAnterior;
+            } else if (ordenados.length > 0) {
+                selectAno.value = ordenados[0];
+            }
         }
 
         function salvarDespesa(event) {
@@ -1516,15 +1530,6 @@
                 plugins: [ChartDataLabels]
             });
         }
-
-        // Inicialização Segura: Garante exibição correta dos gráficos ao carregar ou atualizar cache
-        const ultimaAba = localStorage.getItem('car_last_tab') || 'painel';
-        popularSeletorVeiculos();
-        carregarConfiguracoesVeiculo();
-        popularFiltroAnos();
-        verificarCategoriaAbastecimento();
-        atualizarInterface();
-        mudarAba(ultimaAba);
     </script>
 </body>
 </html>
