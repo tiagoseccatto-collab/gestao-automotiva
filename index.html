@@ -636,7 +636,7 @@
                 }
             });
 
-            // Força o redesenho imediato do gráfico da aba correspondente para garantir renderização correta no celular
+            // Força o redesenho imediato dos gráficos da aba correspondente
             setTimeout(() => {
                 if (abaId === 'painel') {
                     atualizarGraficoCategoria();
@@ -1517,14 +1517,14 @@
             });
         }
 
-        // Inicialização: Restaura a última aba aberta e força a renderização correta
+        // Inicialização Segura: Garante exibição correta dos gráficos ao carregar ou atualizar cache
         const ultimaAba = localStorage.getItem('car_last_tab') || 'painel';
-        mudarAba(ultimaAba);
         popularSeletorVeiculos();
         carregarConfiguracoesVeiculo();
         popularFiltroAnos();
         verificarCategoriaAbastecimento();
         atualizarInterface();
+        mudarAba(ultimaAba);
     </script>
 </body>
 </html>
