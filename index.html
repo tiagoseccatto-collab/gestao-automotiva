@@ -635,6 +635,17 @@
                     btn.className = "flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition";
                 }
             });
+
+            // Força o redesenho imediato do gráfico da aba correspondente para garantir renderização correta no celular
+            setTimeout(() => {
+                if (abaId === 'painel') {
+                    atualizarGraficoCategoria();
+                    atualizarGraficoMensal();
+                } else if (abaId === 'aquisicao') {
+                    atualizarGraficoAquisicaoCard();
+                }
+            }, 50);
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -848,12 +859,8 @@
             const nomeVeiculo = veiculoObj ? veiculoObj.nome : "este veículo";
 
             if (confirm(`Tem certeza que deseja excluir "${nomeVeiculo}" e todos os seus dados e despesas?`)) {
-                // Remove das despesas
                 delete todasDespesas[veiculoAtivoId];
-                // Remove da lista de veículos
                 veiculos = veiculos.filter(v => v.id !== veiculoAtivoId);
-                
-                // Define o primeiro veículo restante como ativo
                 veiculoAtivoId = veiculos[0].id;
 
                 localStorage.setItem('car_fleet', JSON.stringify(veiculos));
@@ -1510,17 +1517,14 @@
             });
         }
 
-        // Restaura a última aba aberta ao iniciar
-        const ultimaAba = localStorage.getItem('car_last_tab');
-        if (ultimaAba) {
-            mudarAba(ultimaAba);
-        } else {
-            popularSeletorVeiculos();
-            carregarConfiguracoesVeiculo();
-            popularFiltroAnos();
-            verificarCategoriaAbastecimento();
-            atualizarInterface();
-        }
+        // Inicialização: Restaura a última aba aberta e força a renderização correta
+        const ultimaAba = localStorage.getItem('car_last_tab') || 'painel';
+        mudarAba(ultimaAba);
+        popularSeletorVeiculos();
+        carregarConfiguracoesVeiculo();
+        popularFiltroAnos();
+        verificarCategoriaAbastecimento();
+        atualizarInterface();
     </script>
 </body>
 </html>
