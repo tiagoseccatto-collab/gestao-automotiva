@@ -53,7 +53,7 @@
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-24 md:pb-8 p-3 md:p-6 flex flex-col justify-between text-sm">
 
     <div class="max-w-4xl mx-auto w-full">
-        <!-- Cabeçalho Compacto para Celular -->
+        <!-- Cabeçalho Compacto para Celular (Sem botão Resetar e Sem Data Compra) -->
         <header class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
             <div>
                 <h1 class="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -68,16 +68,9 @@
                         <!-- Preenchido via JS -->
                     </select>
                 </div>
-                <div class="flex flex-col">
-                    <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Data Compra</label>
-                    <input type="date" id="inputDataCompra" onchange="salvarDataCompra()" class="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 bg-slate-50">
-                </div>
                 <div class="flex items-center gap-1.5 mt-4">
                     <button onclick="abrirModalNovoVeiculo()" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition text-xs shadow-sm" title="Adicionar Novo Veículo">
                         <i class="fa-solid fa-plus"></i>
-                    </button>
-                    <button onclick="limparDados()" class="text-[11px] text-red-500 hover:text-red-700 underline" title="Resetar dados do carro atual">
-                        Resetar
                     </button>
                 </div>
             </div>
@@ -322,6 +315,22 @@
                             <button onclick="abrirModalAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs shadow-sm whitespace-nowrap">
                                 <i class="fa-solid fa-gear mr-1"></i> Configurar
                             </button>
+                        </div>
+
+                        <!-- Campo Data Compra agora posicionado aqui na aba Aquisição -->
+                        <div class="bg-white/90 border border-emerald-200 p-3 rounded-xl mb-3 flex items-center justify-between gap-2 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
+                                    <i class="fa-solid fa-calendar-day"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-bold uppercase tracking-wider text-emerald-800">Data de Compra do Veículo</p>
+                                    <p class="text-[11px] text-slate-500">Data base para cálculos e histórico.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="date" id="inputDataCompra" onchange="salvarDataCompra()" class="rounded-lg border border-emerald-300 px-2 py-1.5 text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-emerald-500">
+                            </div>
                         </div>
 
                         <div id="highlightProximaParcelaAquisicao" class="bg-white/90 border border-emerald-200 p-3 rounded-xl mb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-sm">
@@ -1233,18 +1242,6 @@
             salvarNoLocalStorage();
             popularFiltroAnos();
             atualizarInterface();
-        }
-
-        function limparDados() {
-            if (confirm("Apagar todos os registros deste veículo?")) {
-                todasDespesas[veiculoAtivoId] = [];
-                ['car_next_service_', 'car_next_service_date_', 'car_purchase_date_', 'car_venc_ipva_', 'car_venc_lic_', 'car_venc_seg_', 'car_venc_cnh_andrey_', 'car_venc_cnh_tiago_', 'car_parcelas_ipva_', 'car_parcelas_lic_', 'car_parcelas_seg_', 'car_aq_total_', 'car_aq_entrada_', 'car_aq_data_entrada_', 'car_parcelas_aquisicao_'].forEach(k => localStorage.removeItem(k + veiculoAtivoId));
-                carregarConfiguracoesVeiculo();
-                cancelarEdicao();
-                salvarNoLocalStorage();
-                popularFiltroAnos();
-                atualizarInterface();
-            }
         }
 
         function formatarMoeda(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
