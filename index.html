@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Despesas do Veículo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -34,9 +34,8 @@
         }
     </script>
 
-    <!-- Estilo Compacto para Mobile e Dark Mode -->
+    <!-- Estilo para o Dark Mode Global e Abas -->
     <style>
-        html { font-size: 13px; } /* Reduz a escala base global para celular */
         .dark-mode { 
             filter: invert(0.9) hue-rotate(180deg); 
             background-color: #0b0f19;
@@ -51,32 +50,33 @@
         .tab-content.active { display: block; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-20 md:pb-8 p-2.5 md:p-6 flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-24 md:pb-8 p-3 md:p-6 flex flex-col justify-between text-sm">
 
-    <div class="max-w-3xl mx-auto w-full space-y-3">
-        <!-- Cabeçalho Ultra Compacto -->
-        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-white p-3 rounded-xl shadow-sm border border-slate-200">
+    <div class="max-w-4xl mx-auto w-full">
+        <!-- Cabeçalho Compacto para Celular -->
+        <header class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
             <div>
-                <h1 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <h1 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-car-side text-blue-600"></i> Gestão Automotiva
                 </h1>
+                <p class="text-[11px] text-slate-500 mt-0.5">Alterne entre os veículos e gerencie despesas.</p>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2.5">
                 <div class="flex flex-col">
-                    <label class="text-[8px] font-bold uppercase tracking-wider text-slate-400">Veículo</label>
-                    <select id="selectVeiculoAtivo" onchange="trocarVeiculoAtivo()" class="rounded border border-slate-300 px-2 py-0.5 text-[11px] font-semibold text-slate-800 bg-slate-50">
+                    <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Veículo Ativo</label>
+                    <select id="selectVeiculoAtivo" onchange="trocarVeiculoAtivo()" class="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 bg-slate-50">
                         <!-- Preenchido via JS -->
                     </select>
                 </div>
                 <div class="flex flex-col">
-                    <label class="text-[8px] font-bold uppercase tracking-wider text-slate-400">Compra</label>
-                    <input type="date" id="inputDataCompra" onchange="salvarDataCompra()" class="rounded border border-slate-300 px-1.5 py-0.5 text-[11px] font-semibold text-slate-800 bg-slate-50">
+                    <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Data Compra</label>
+                    <input type="date" id="inputDataCompra" onchange="salvarDataCompra()" class="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 bg-slate-50">
                 </div>
-                <div class="flex items-center gap-1.5 mt-3">
-                    <button onclick="abrirModalNovoVeiculo()" class="bg-blue-600 text-white p-1.5 rounded text-[11px]" title="Novo Veículo">
+                <div class="flex items-center gap-1.5 mt-4">
+                    <button onclick="abrirModalNovoVeiculo()" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition text-xs shadow-sm" title="Adicionar Novo Veículo">
                         <i class="fa-solid fa-plus"></i>
                     </button>
-                    <button onclick="limparDados()" class="text-[10px] text-red-500 underline">
+                    <button onclick="limparDados()" class="text-[11px] text-red-500 hover:text-red-700 underline" title="Resetar dados do carro atual">
                         Resetar
                     </button>
                 </div>
@@ -84,51 +84,83 @@
         </header>
 
         <!-- ================= ABA 1: PAINEL GERAL ================= -->
-        <div id="tab-painel" class="tab-content active space-y-3">
-            <!-- Cards Resumo (4 Cards) -->
-            <div class="grid grid-cols-2 gap-2">
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-2.5 rounded-xl shadow-sm border border-blue-100 flex flex-col justify-between">
-                    <span class="text-[9px] font-bold uppercase text-blue-600">Gasto Total</span>
-                    <h3 id="totalGasto" class="text-base font-black text-slate-900 mt-0.5">R$ 0,00</h3>
+        <div id="tab-painel" class="tab-content active space-y-4">
+            <!-- Cards Resumo (4 Cards Compactos) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-3.5 rounded-xl shadow-sm border border-blue-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Gasto Total</span>
+                        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <h3 id="totalGasto" class="text-lg font-black text-slate-900">R$ 0,00</h3>
                 </div>
-                <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 p-2.5 rounded-xl shadow-sm border border-emerald-100 flex flex-col justify-between">
-                    <span class="text-[9px] font-bold uppercase text-emerald-600">Última Km</span>
-                    <h3 id="ultimaKm" class="text-base font-black text-slate-900 mt-0.5">0 km</h3>
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 p-3.5 rounded-xl shadow-sm border border-emerald-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Última Km</span>
+                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-gauge-high"></i>
+                        </div>
+                    </div>
+                    <h3 id="ultimaKm" class="text-lg font-black text-slate-900">0 km</h3>
                 </div>
-                <div class="bg-gradient-to-br from-violet-50 to-purple-50/50 p-2.5 rounded-xl shadow-sm border border-violet-100 flex flex-col justify-between">
-                    <span class="text-[9px] font-bold uppercase text-violet-600">Custo / Km</span>
-                    <h3 id="custoPorKm" class="text-base font-black text-slate-900 mt-0.5">R$ 0,00</h3>
+                <div class="bg-gradient-to-br from-violet-50 to-purple-50/50 p-3.5 rounded-xl shadow-sm border border-violet-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-violet-600">Custo / Km</span>
+                        <div class="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                    </div>
+                    <h3 id="custoPorKm" class="text-lg font-black text-slate-900">R$ 0,00</h3>
                 </div>
-                <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-2.5 rounded-xl shadow-sm border border-amber-100 flex flex-col justify-between">
-                    <span class="text-[9px] font-bold uppercase text-amber-600">Média Km/L</span>
-                    <h3 id="kmPorLitro" class="text-base font-black text-slate-900 mt-0.5">0,0 km/L</h3>
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-3.5 rounded-xl shadow-sm border border-amber-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600">Média Km/L</span>
+                        <div class="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-gas-pump"></i>
+                        </div>
+                    </div>
+                    <h3 id="kmPorLitro" class="text-lg font-black text-slate-900">0,0 km/L</h3>
                 </div>
             </div>
 
-            <!-- Card Revisão -->
-            <div class="bg-gradient-to-r from-amber-100/80 to-amber-50 p-3 rounded-xl shadow-sm border border-amber-200 flex flex-col gap-2">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-700 text-sm"></i>
+            <!-- Card Highlight: Próxima Revisão Prevista -->
+            <div class="bg-gradient-to-r from-amber-100/80 to-amber-50 p-4 rounded-xl shadow-sm border border-amber-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-lg bg-amber-200 text-amber-800 flex items-center justify-center text-base shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
                     <div>
-                        <p class="text-[9px] font-bold uppercase text-amber-800">Próxima Revisão</p>
-                        <p id="obsRevisao" class="text-[11px] font-semibold text-amber-900">Calculando...</p>
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-amber-800">Próxima Revisão</p>
+                        <p id="obsRevisao" class="text-xs font-semibold text-amber-900 mt-0.5">Calculando status...</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5 pt-1 border-t border-amber-200">
-                    <input type="number" id="inputProximaRevisao" placeholder="Meta Km" class="rounded border border-amber-300 px-2 py-1 text-[11px] bg-white w-24">
-                    <input type="date" id="inputDataRevisao" class="rounded border border-amber-300 px-2 py-1 text-[11px] bg-white flex-1">
-                    <button onclick="salvarProximaRevisao()" class="bg-amber-600 text-white font-semibold px-2.5 py-1 rounded text-[11px]">Salvar</button>
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-bold uppercase text-amber-800">Meta Km</label>
+                        <input type="number" id="inputProximaRevisao" placeholder="Ex: 20000" class="rounded-lg border border-amber-300 px-2 py-1.5 text-xs bg-white w-28">
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-bold uppercase text-amber-800">Data Limite</label>
+                        <input type="date" id="inputDataRevisao" class="rounded-lg border border-amber-300 px-2 py-1.5 text-xs bg-white w-32">
+                    </div>
+                    <button onclick="salvarProximaRevisao()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs mt-auto">Salvar</button>
                 </div>
             </div>
 
-            <!-- Gráficos -->
-            <div class="grid grid-cols-1 gap-3">
-                <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between mb-2">
-                        <h2 class="text-[11px] font-bold text-slate-800 uppercase">Gastos por Mês</h2>
-                        <div class="flex items-center gap-1">
-                            <select id="filtroAno" onchange="atualizarInterface()" class="rounded border border-slate-300 px-1.5 py-0.5 text-[10px]"></select>
-                            <select id="filtroMes" onchange="atualizarInterface()" class="rounded border border-slate-300 px-1.5 py-0.5 text-[10px]">
+            <!-- Bloco de Gráficos (Mensal e Categorias) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-chart-column text-blue-600"></i> Gastos por Mês
+                        </h2>
+                        <div class="flex items-center gap-1.5">
+                            <select id="filtroAno" onchange="atualizarInterface()" class="rounded-lg border border-slate-300 px-2 py-1 text-[11px] focus:ring-2 focus:ring-blue-500">
+                                <!-- Preenchido dinamicamente -->
+                            </select>
+                            <select id="filtroMes" onchange="atualizarInterface()" class="rounded-lg border border-slate-300 px-2 py-1 text-[11px] focus:ring-2 focus:ring-blue-500">
                                 <option value="Todos">Todos</option>
                                 <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option>
                                 <option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option>
@@ -136,19 +168,21 @@
                             </select>
                         </div>
                     </div>
-                    <div class="relative w-full h-36 flex justify-center">
+                    <div class="relative w-full h-44 flex justify-center">
                         <canvas id="graficoMensal"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                    <h2 class="text-[11px] font-bold text-slate-800 uppercase mb-2">Gastos por Categoria</h2>
-                    <div class="grid grid-cols-2 gap-2 items-center">
-                        <div class="relative w-full h-32 flex justify-center items-center">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5 mb-3">
+                        <i class="fa-solid fa-chart-pie text-blue-600"></i> Gastos por Categoria
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                        <div class="relative w-full h-36 flex justify-center items-center">
                             <canvas id="graficoCategorias"></canvas>
                         </div>
-                        <div class="max-h-32 overflow-y-auto pr-1 border-l border-slate-100 pl-2">
-                            <div id="legendaLateral" class="flex flex-col gap-0.5 text-[10px]"></div>
+                        <div class="max-h-36 overflow-y-auto pr-1 border-l sm:border-l-slate-100 sm:pl-3">
+                            <div id="legendaLateral" class="flex flex-col gap-1 text-[11px]"></div>
                         </div>
                     </div>
                 </div>
@@ -156,20 +190,81 @@
         </div>
 
         <!-- ================= ABA 2: ABASTECIMENTOS & LANÇAMENTOS ================= -->
-        <div id="tab-abastecimentos" class="tab-content space-y-3">
-            <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                <h2 id="formTitle" class="text-xs font-bold text-slate-800 mb-2.5 flex items-center gap-1">
-                    <i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa
-                </h2>
-                <form id="expenseForm" onsubmit="salvarDespesa(event)" class="space-y-2">
-                    <div class="grid grid-cols-2 gap-2">
+        <div id="tab-abastecimentos" class="tab-content space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                <!-- Formulário Nova Despesa / Abastecimento -->
+                <div class="md:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <h2 id="formTitle" class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa
+                    </h2>
+                    <form id="expenseForm" onsubmit="salvarDespesa(event)" class="space-y-3">
                         <div>
-                            <label class="block text-[9px] font-bold uppercase text-slate-500">Data</label>
-                            <input type="date" id="data" required class="w-full rounded border border-slate-300 px-2 py-1 text-[11px]">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Data</label>
+                            <input type="date" id="data" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold uppercase text-slate-500">Categoria</label>
-                            <select id="categoria" onchange="verificarCategoriaAbastecimento()" required class="w-full rounded border border-slate-300 px-2 py-1 text-[11px]">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Categoria</label>
+                            <select id="categoria" onchange="verificarCategoriaAbastecimento()" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
+                                <option value="Abastecimento">Abastecimento</option>
+                                <option value="Aquisição de veículo">Aquisição de veículo</option>
+                                <option value="IPVA">IPVA</option>
+                                <option value="Licenciamento">Licenciamento</option>
+                                <option value="Seguro">Seguro</option>
+                                <option value="Revisão">Revisão</option>
+                                <option value="Multa">Multa</option>
+                                <option value="Acessórios">Acessórios</option>
+                                <option value="Lavagem">Lavagem</option>
+                                <option value="Sem Parar">Sem Parar</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div id="blocoKm">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Quilometragem (km)</label>
+                            <input type="number" id="km" placeholder="Ex: 15400" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Valor (R$)</label>
+                            <input type="number" step="0.01" id="valor" placeholder="0,00" oninput="calcularAbastecimento()" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div id="camposAbastecimento" class="grid grid-cols-2 gap-2 p-2.5 bg-blue-50/50 rounded-lg border border-blue-100">
+                            <div>
+                                <label class="block text-[9px] font-bold uppercase text-blue-700 mb-0.5">Litros</label>
+                                <input type="number" step="0.001" id="litros" placeholder="Ex: 45.5" oninput="calcularAbastecimento()" class="w-full rounded border border-blue-200 px-2 py-1 text-xs bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-bold uppercase text-blue-700 mb-0.5">Preço / Litro</label>
+                                <input type="number" step="0.001" id="precoLitro" placeholder="Ex: 5.89" oninput="calcularAbastecimento()" class="w-full rounded border border-blue-200 px-2 py-1 text-xs bg-white">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Descrição</label>
+                            <input type="text" id="descricao" placeholder="Ex: Posto Ipiranga..." required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="flex gap-2 pt-1">
+                            <button type="submit" id="btnSubmit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition text-xs shadow-sm">
+                                Adicionar
+                            </button>
+                            <button type="button" id="btnCancelarEdicao" onclick="cancelarEdicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-2 rounded-lg transition text-xs">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabela de Histórico -->
+                <div class="md:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-list text-blue-600"></i> Histórico
+                        </h2>
+                        <div>
+                            <select id="filtroTabela" onchange="atualizarInterface()" class="rounded-lg border border-slate-300 px-2 py-1 text-[11px] focus:ring-2 focus:ring-blue-500">
+                                <option value="Todas">Todas Categorias</option>
                                 <option value="Abastecimento">Abastecimento</option>
                                 <option value="Aquisição de veículo">Aquisição de veículo</option>
                                 <option value="IPVA">IPVA</option>
@@ -184,278 +279,330 @@
                             </select>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div id="blocoKm">
-                            <label class="block text-[9px] font-bold uppercase text-slate-500">Km</label>
-                            <input type="number" id="km" placeholder="Ex: 15400" class="w-full rounded border border-slate-300 px-2 py-1 text-[11px]">
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-bold uppercase text-slate-500">Valor (R$)</label>
-                            <input type="number" step="0.01" id="valor" placeholder="0,00" oninput="calcularAbastecimento()" required class="w-full rounded border border-slate-300 px-2 py-1 text-[11px]">
-                        </div>
+                    <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="sticky top-0 bg-white shadow-sm">
+                                <tr class="border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase">
+                                    <th class="py-2 pr-2">Data</th>
+                                    <th class="py-2 pr-2">Categoria</th>
+                                    <th class="py-2 pr-2">Descrição</th>
+                                    <th class="py-2 pr-2">Km</th>
+                                    <th class="py-2 pr-2 text-right">Valor</th>
+                                    <th class="py-2 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseTableBody" class="divide-y divide-slate-100">
+                                <!-- Inserido via JS -->
+                            </tbody>
+                        </table>
                     </div>
-
-                    <div id="camposAbastecimento" class="grid grid-cols-2 gap-2 p-2 bg-blue-50/50 rounded border border-blue-100">
-                        <div>
-                            <label class="block text-[8px] font-bold uppercase text-blue-700">Litros</label>
-                            <input type="number" step="0.001" id="litros" placeholder="45.5" oninput="calcularAbastecimento()" class="w-full rounded border border-blue-200 px-1.5 py-0.5 text-[11px] bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-[8px] font-bold uppercase text-blue-700">Preço/Litro</label>
-                            <input type="number" step="0.001" id="precoLitro" placeholder="5.89" oninput="calcularAbastecimento()" class="w-full rounded border border-blue-200 px-1.5 py-0.5 text-[11px] bg-white">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[9px] font-bold uppercase text-slate-500">Descrição</label>
-                        <input type="text" id="descricao" placeholder="Ex: Posto Ipiranga..." required class="w-full rounded border border-slate-300 px-2 py-1 text-[11px]">
-                    </div>
-
-                    <div class="flex gap-2 pt-1">
-                        <button type="submit" id="btnSubmit" class="flex-1 bg-blue-600 text-white font-medium py-1.5 rounded text-[11px] shadow-sm">Adicionar</button>
-                        <button type="button" id="btnCancelarEdicao" onclick="cancelarEdicao()" class="hidden bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded text-[11px]">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Tabela Histórico -->
-            <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-[11px] font-bold text-slate-800 uppercase">Histórico</h2>
-                    <select id="filtroTabela" onchange="atualizarInterface()" class="rounded border border-slate-300 px-1.5 py-0.5 text-[10px]">
-                        <option value="Todas">Todas</option>
-                        <option value="Abastecimento">Abastecimento</option>
-                        <option value="Aquisição de veículo">Aquisição</option>
-                        <option value="IPVA">IPVA</option>
-                        <option value="Licenciamento">Licenciamento</option>
-                        <option value="Seguro">Seguro</option>
-                        <option value="Revisão">Revisão</option>
-                        <option value="Multa">Multa</option>
-                        <option value="Acessórios">Acessórios</option>
-                        <option value="Lavagem">Lavagem</option>
-                        <option value="Sem Parar">Sem Parar</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-                </div>
-                <div class="overflow-x-auto max-h-60 overflow-y-auto">
-                    <table class="w-full text-left border-collapse text-[10px]">
-                        <thead class="sticky top-0 bg-white">
-                            <tr class="border-b border-slate-200 text-slate-400 uppercase font-bold">
-                                <th class="py-1.5 pr-1">Data</th>
-                                <th class="py-1.5 pr-1">Cat.</th>
-                                <th class="py-1.5 pr-1">Descrição</th>
-                                <th class="py-1.5 pr-1 text-right">Valor</th>
-                                <th class="py-1.5 text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="expenseTableBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
-                </div>
-                <div id="emptyState" class="text-center py-6 text-slate-400 hidden text-[11px]">Nenhum registro.</div>
-            </div>
-        </div>
-
-        <!-- ================= ABA 3: AQUISIÇÃO ================= -->
-        <div id="tab-aquisicao" class="tab-content space-y-3">
-            <div class="bg-gradient-to-r from-emerald-100/80 to-teal-50 p-3.5 rounded-xl shadow-sm border border-emerald-200 space-y-2.5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-[9px] font-bold uppercase text-emerald-800">Aquisição</p>
-                        <h3 class="text-xs font-black text-slate-900">Entrada e Parcelas</h3>
-                    </div>
-                    <button onclick="abrirModalAquisicao()" class="bg-emerald-600 text-white px-2.5 py-1 rounded text-[10px] font-semibold">Configurar</button>
-                </div>
-
-                <div id="highlightProximaParcelaAquisicao" class="bg-white/90 border border-emerald-200 p-2.5 rounded-lg text-[10px] flex items-center justify-between">
-                    <div>
-                        <span class="font-bold text-emerald-800 block text-[8px] uppercase">Próxima Parcela</span>
-                        <p id="textoProximaParcelaAquisicao" class="font-bold text-slate-800">Nenhuma pendente.</p>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <button id="btnMarcarPagaProxima" onclick="marcarProximaComoPaga()" class="hidden bg-emerald-600 text-white font-bold px-2 py-0.5 rounded text-[9px]">Paga</button>
-                        <span id="statusPrazoParcelaAquisicao" class="font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[8px]">Sem pendências</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-1.5 text-[10px]">
-                    <div class="bg-white/80 p-2 rounded border border-emerald-100">
-                        <span class="block text-[8px] font-bold uppercase text-emerald-700">Total</span>
-                        <span id="resumoValorTotal" class="font-black text-slate-900">R$ 0</span>
-                    </div>
-                    <div class="bg-white/80 p-2 rounded border border-emerald-100">
-                        <span class="block text-[8px] font-bold uppercase text-emerald-700">Entrada</span>
-                        <span id="resumoValorEntrada" class="font-black text-slate-900">R$ 0</span>
-                    </div>
-                    <div class="bg-white/80 p-2 rounded border border-emerald-100">
-                        <span class="block text-[8px] font-bold uppercase text-emerald-700">Pagas</span>
-                        <span id="resumoStatusParcelas" class="font-black text-slate-900">0 / 0</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                <h2 class="text-[11px] font-bold text-slate-800 uppercase mb-2">Progresso</h2>
-                <div class="relative w-full h-32 flex justify-center items-center">
-                    <canvas id="graficoAquisicaoCard"></canvas>
-                </div>
-                <div id="legendaAquisicaoCard" class="mt-2 pt-2 border-t border-slate-100 text-[10px]"></div>
-            </div>
-        </div>
-
-        <!-- ================= ABA 4: OBRIGAÇÕES ================= -->
-        <div id="tab-obrigacoes" class="tab-content space-y-3">
-            <div class="bg-gradient-to-r from-indigo-100/80 to-blue-50 p-3.5 rounded-xl shadow-sm border border-indigo-200 space-y-2.5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-[9px] font-bold uppercase text-indigo-800">Obrigações</p>
-                        <h3 class="text-xs font-black text-slate-900">Vencimentos</h3>
-                    </div>
-                    <button onclick="salvarVencimentos()" class="bg-indigo-600 text-white px-2.5 py-1 rounded text-[10px] font-semibold">Salvar</button>
-                </div>
-
-                <div class="grid grid-cols-1 gap-2 text-[10px]">
-                    <div class="bg-white/80 p-2 rounded border border-indigo-100 flex items-center justify-between">
-                        <div>
-                            <span class="font-bold text-indigo-700 uppercase block text-[9px]">IPVA</span>
-                            <input type="date" id="vencimentoIpva" onchange="verificarStatusVencimentos()" class="rounded border border-slate-300 px-1 py-0.5 text-[10px] mt-0.5 bg-white">
-                            <span id="statusIpva" class="block text-[8px] font-bold mt-0.5 text-slate-400">Não informado</span>
-                        </div>
-                        <button type="button" onclick="abrirModalParcelas('ipva', 'IPVA')" class="bg-indigo-50 text-indigo-600 font-bold px-2 py-1 rounded text-[9px]">Parcelas</button>
-                    </div>
-
-                    <div class="bg-white/80 p-2 rounded border border-indigo-100 flex items-center justify-between">
-                        <div>
-                            <span class="font-bold text-indigo-700 uppercase block text-[9px]">Licenciamento</span>
-                            <input type="date" id="vencimentoLicenciamento" onchange="verificarStatusVencimentos()" class="rounded border border-slate-300 px-1 py-0.5 text-[10px] mt-0.5 bg-white">
-                            <span id="statusLicenciamento" class="block text-[8px] font-bold mt-0.5 text-slate-400">Não informado</span>
-                        </div>
-                        <button type="button" onclick="abrirModalParcelas('lic', 'Licenciamento')" class="bg-indigo-50 text-indigo-600 font-bold px-2 py-1 rounded text-[9px]">Parcelas</button>
-                    </div>
-
-                    <div class="bg-white/80 p-2 rounded border border-indigo-100 flex items-center justify-between">
-                        <div>
-                            <span class="font-bold text-indigo-700 uppercase block text-[9px]">Seguro</span>
-                            <input type="date" id="vencimentoSeguro" onchange="verificarStatusVencimentos()" class="rounded border border-slate-300 px-1 py-0.5 text-[10px] mt-0.5 bg-white">
-                            <span id="statusSeguro" class="block text-[8px] font-bold mt-0.5 text-slate-400">Não informado</span>
-                        </div>
-                        <button type="button" onclick="abrirModalParcelas('seg', 'Seguro')" class="bg-indigo-50 text-indigo-600 font-bold px-2 py-1 rounded text-[9px]">Parcelas</button>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-1.5 pt-1">
-                        <div class="bg-white/80 p-2 rounded border border-indigo-100">
-                            <span class="font-bold text-indigo-700 uppercase block text-[9px]">CNH Andrey</span>
-                            <input type="date" id="vencimentoCnhAndrey" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-1 py-0.5 text-[10px] mt-0.5 bg-white">
-                            <span id="statusCnhAndrey" class="block text-[8px] font-bold mt-0.5 text-slate-400">Não informado</span>
-                        </div>
-                        <div class="bg-white/80 p-2 rounded border border-indigo-100">
-                            <span class="font-bold text-indigo-700 uppercase block text-[9px]">CNH Tiago</span>
-                            <input type="date" id="vencimentoCnhTiago" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-1 py-0.5 text-[10px] mt-0.5 bg-white">
-                            <span id="statusCnhTiago" class="block text-[8px] font-bold mt-0.5 text-slate-400">Não informado</span>
-                        </div>
+                    <div id="emptyState" class="text-center py-8 text-slate-400 hidden text-xs">
+                        <i class="fa-solid fa-folder-open text-2xl mb-1"></i>
+                        <p>Nenhum registro encontrado.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Rodapé Cache -->
-        <footer class="text-center pt-3 pb-2">
-            <button id="btnAtualizarCache" onclick="atualizarCache()" class="text-[10px] text-slate-400 hover:text-slate-600">
+        <!-- ================= ABA 3: AQUISIÇÃO & FINANCIAMENTO ================= -->
+        <div id="tab-aquisicao" class="tab-content space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="lg:col-span-2 bg-gradient-to-r from-emerald-100/80 to-teal-50 p-4 rounded-xl shadow-sm border border-emerald-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-200 text-emerald-800 flex items-center justify-center text-base shrink-0">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Aquisição de Veículo</p>
+                                    <h3 class="text-sm font-black text-slate-900">Entrada e Parcelas</h3>
+                                </div>
+                            </div>
+                            <button onclick="abrirModalAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs shadow-sm whitespace-nowrap">
+                                <i class="fa-solid fa-gear mr-1"></i> Configurar
+                            </button>
+                        </div>
+
+                        <div id="highlightProximaParcelaAquisicao" class="bg-white/90 border border-emerald-200 p-3 rounded-xl mb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-bold uppercase tracking-wider text-emerald-800">Próxima Parcela</p>
+                                    <p id="textoProximaParcelaAquisicao" class="text-xs font-bold text-slate-800">Nenhuma parcela pendente.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 self-end sm:self-auto">
+                                <button id="btnMarcarPagaProxima" onclick="marcarProximaComoPaga()" class="hidden text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-2.5 py-1 rounded shadow-sm">
+                                    Paga
+                                </button>
+                                <span id="statusPrazoParcelaAquisicao" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Sem pendências</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-emerald-200/60 text-xs">
+                        <div class="bg-white/80 p-2.5 rounded-lg border border-emerald-100">
+                            <span class="block text-[9px] font-bold uppercase text-emerald-700">Total</span>
+                            <span id="resumoValorTotal" class="text-xs font-black text-slate-900">R$ 0,00</span>
+                        </div>
+                        <div class="bg-white/80 p-2.5 rounded-lg border border-emerald-100">
+                            <span class="block text-[9px] font-bold uppercase text-emerald-700">Entrada</span>
+                            <span id="resumoValorEntrada" class="text-xs font-black text-slate-900">R$ 0,00</span>
+                        </div>
+                        <div class="bg-white/80 p-2.5 rounded-lg border border-emerald-100">
+                            <span class="block text-[9px] font-bold uppercase text-emerald-700">Pagas</span>
+                            <span id="resumoStatusParcelas" class="text-xs font-black text-slate-900">0 / 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5 mb-2">
+                            <i class="fa-solid fa-car text-emerald-600"></i> Progresso da Aquisição
+                        </h2>
+                        <div class="relative w-full h-36 flex justify-center items-center">
+                            <canvas id="graficoAquisicaoCard"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-slate-100">
+                        <div id="legendaAquisicaoCard" class="flex flex-col gap-1 text-[11px]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ABA 4: OBRIGAÇÕES & VENCIMENTOS ================= -->
+        <div id="tab-obrigacoes" class="tab-content space-y-4">
+            <div class="bg-gradient-to-r from-indigo-100/80 to-blue-50 p-4 rounded-xl shadow-sm border border-indigo-200">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-200 text-indigo-800 flex items-center justify-center text-base shrink-0">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-800">Obrigações</p>
+                            <h3 class="text-sm font-black text-slate-900">IPVA, Licenciamento, Seguro e CNHs</h3>
+                        </div>
+                    </div>
+                    <button onclick="salvarVencimentos()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs shadow-sm whitespace-nowrap">
+                        Salvar Datas
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-3 pt-3 border-t border-indigo-200/60">
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[10px] font-bold uppercase text-indigo-700">IPVA</label>
+                                <button type="button" onclick="abrirModalParcelas('ipva', 'IPVA')" class="text-[9px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">
+                                    Parcelas
+                                </button>
+                            </div>
+                            <input type="date" id="vencimentoIpva" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                        </div>
+                        <span id="statusIpva" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
+                    </div>
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[10px] font-bold uppercase text-indigo-700">Licenciamento</label>
+                                <button type="button" onclick="abrirModalParcelas('lic', 'Licenciamento')" class="text-[9px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">
+                                    Parcelas
+                                </button>
+                            </div>
+                            <input type="date" id="vencimentoLicenciamento" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                        </div>
+                        <span id="statusLicenciamento" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
+                    </div>
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[10px] font-bold uppercase text-indigo-700">Seguro</label>
+                                <button type="button" onclick="abrirModalParcelas('seg', 'Seguro')" class="text-[9px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">
+                                    Parcelas
+                                </button>
+                            </div>
+                            <input type="date" id="vencimentoSeguro" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                        </div>
+                        <span id="statusSeguro" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2.5 pt-2.5 border-t border-indigo-200/40">
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
+                        <label class="block text-[10px] font-bold uppercase text-indigo-700 mb-1">CNH Andrey</label>
+                        <input type="date" id="vencimentoCnhAndrey" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                        <span id="statusCnhAndrey" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
+                    </div>
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-indigo-100 flex flex-col justify-between">
+                        <label class="block text-[10px] font-bold uppercase text-indigo-700 mb-1">CNH Tiago</label>
+                        <input type="date" id="vencimentoCnhTiago" onchange="verificarStatusVencimentos()" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                        <span id="statusCnhTiago" class="text-[9px] font-bold mt-1 text-slate-400">Não informado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rodapé com Botão Discreto de Atualizar Cache -->
+        <footer class="text-center pt-6 pb-4">
+            <button id="btnAtualizarCache" onclick="atualizarCache()" class="text-[11px] text-slate-400 hover:text-slate-600 transition inline-flex items-center gap-1 py-1 px-2.5 rounded-lg hover:bg-slate-200/50">
                 <i class="fa-solid fa-rotate"></i> Atualizar Cache
             </button>
         </footer>
     </div>
 
-    <!-- Navegação Inferior Fixa -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg z-40 px-2 py-1">
+    <!-- Navegação Inferior Fixa Estilo App Mobile -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg z-40 px-2 py-1.5">
         <div class="max-w-md mx-auto grid grid-cols-4 gap-1 text-center">
-            <button onclick="mudarAba('painel')" id="nav-painel" class="flex flex-col items-center py-1 text-blue-600 font-semibold">
-                <i class="fa-solid fa-chart-pie text-sm mb-0.5"></i>
-                <span class="text-[8px]">Painel</span>
+            <button onclick="mudarAba('painel')" id="nav-painel" class="flex flex-col items-center py-1.5 text-blue-600 font-semibold transition">
+                <i class="fa-solid fa-chart-pie text-base mb-0.5"></i>
+                <span class="text-[9px]">Painel</span>
             </button>
-            <button onclick="mudarAba('abastecimentos')" id="nav-abastecimentos" class="flex flex-col items-center py-1 text-slate-400">
-                <i class="fa-solid fa-gas-pump text-sm mb-0.5"></i>
-                <span class="text-[8px]">Lançamentos</span>
+            <button onclick="mudarAba('abastecimentos')" id="nav-abastecimentos" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition">
+                <i class="fa-solid fa-gas-pump text-base mb-0.5"></i>
+                <span class="text-[9px]">Lançamentos</span>
             </button>
-            <button onclick="mudarAba('aquisicao')" id="nav-aquisicao" class="flex flex-col items-center py-1 text-slate-400">
-                <i class="fa-solid fa-file-invoice-dollar text-sm mb-0.5"></i>
-                <span class="text-[8px]">Aquisição</span>
+            <button onclick="mudarAba('aquisicao')" id="nav-aquisicao" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition">
+                <i class="fa-solid fa-file-invoice-dollar text-base mb-0.5"></i>
+                <span class="text-[9px]">Aquisição</span>
             </button>
-            <button onclick="mudarAba('obrigacoes')" id="nav-obrigacoes" class="flex flex-col items-center py-1 text-slate-400">
-                <i class="fa-solid fa-calendar-days text-sm mb-0.5"></i>
-                <span class="text-[8px]">Obrigações</span>
+            <button onclick="mudarAba('obrigacoes')" id="nav-obrigacoes" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition">
+                <i class="fa-solid fa-calendar-days text-base mb-0.5"></i>
+                <span class="text-[9px]">Obrigações</span>
             </button>
         </div>
     </nav>
 
-    <!-- Modais compactos -->
+    <!-- Modais (Novo Veículo, Aquisição, Parcelas) -->
     <div id="modalNovoVeiculo" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3">
-        <div class="bg-white rounded-xl shadow-xl max-w-xs w-full p-3 text-[11px]">
-            <h3 class="font-bold text-slate-900 mb-2">Novo Veículo</h3>
-            <div class="space-y-2">
-                <input type="text" id="inputModalModelo" placeholder="Modelo (Ex: Civic)" class="w-full rounded border border-slate-300 px-2 py-1">
-                <input type="text" id="inputModalPlaca" maxlength="8" placeholder="Placa (ABC-1234)" oninput="formatarPlacaModal(this)" class="w-full rounded border border-slate-300 px-2 py-1 uppercase">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-4 border border-slate-200 text-xs">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5 mb-3">
+                <i class="fa-solid fa-car text-blue-600"></i> Adicionar Veículo
+            </h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Modelo / Nome</label>
+                    <input type="text" id="inputModalModelo" placeholder="Ex: Honda Civic" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Placa</label>
+                    <input type="text" id="inputModalPlaca" maxlength="8" placeholder="ABC-1234" oninput="formatarPlacaModal(this)" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs uppercase focus:ring-2 focus:ring-blue-500">
+                </div>
                 <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="salvarNovoVeiculoModal()" class="flex-1 bg-blue-600 text-white py-1 rounded">Cadastrar</button>
-                    <button type="button" onclick="fecharModalNovoVeiculo()" class="bg-slate-200 px-3 py-1 rounded">Cancelar</button>
+                    <button type="button" onclick="salvarNovoVeiculoModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-xs shadow-sm">Cadastrar</button>
+                    <button type="button" onclick="fecharModalNovoVeiculo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-2 rounded-lg text-xs">Cancelar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modalAquisicao" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-2">
-        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-3 max-h-[90vh] overflow-y-auto text-[11px]">
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="font-bold text-slate-900">Configurar Aquisição</h3>
-                <button onclick="fecharModalAquisicao()"><i class="fa-solid fa-xmark"></i></button>
+    <div id="modalAquisicao" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-4 border border-slate-200 max-h-[90vh] overflow-y-auto text-xs">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Aquisição do Veículo
+                </h3>
+                <button onclick="fecharModalAquisicao()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
-            <div class="grid grid-cols-2 gap-1.5 mb-2">
-                <input type="number" step="0.01" id="inputAquisicaoTotal" placeholder="Valor Total" class="rounded border px-2 py-1">
-                <input type="number" step="0.01" id="inputAquisicaoEntrada" placeholder="Entrada" class="rounded border px-2 py-1">
-            </div>
-            <input type="date" id="inputAquisicaoDataEntrada" class="w-full rounded border px-2 py-1 mb-2">
-            <div class="bg-slate-50 p-2 rounded border mb-2 space-y-1.5">
-                <input type="text" id="inputParcelaAquisicaoNome" placeholder="Nome (Ex: P1)" class="w-full rounded border px-2 py-0.5 text-[10px]">
-                <div class="grid grid-cols-2 gap-1">
-                    <input type="date" id="inputParcelaAquisicaoData" class="rounded border px-1 py-0.5 text-[10px]">
-                    <input type="number" step="0.01" id="inputParcelaAquisicaoValor" placeholder="Valor" class="rounded border px-1 py-0.5 text-[10px]">
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Valor Total (R$)</label>
+                    <input type="number" step="0.01" id="inputAquisicaoTotal" class="w-full rounded-lg border border-slate-300 px-2.5 py-1 text-xs bg-white">
                 </div>
-                <button type="button" id="btnSalvarParcelaAquisicao" onclick="adicionarOuAtualizarParcelaAquisicao()" class="w-full bg-emerald-600 text-white py-1 rounded text-[10px]">Incluir Parcela</button>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Entrada (R$)</label>
+                    <input type="number" step="0.01" id="inputAquisicaoEntrada" class="w-full rounded-lg border border-slate-300 px-2.5 py-1 text-xs bg-white">
+                </div>
             </div>
-            <div class="max-h-32 overflow-y-auto border rounded mb-2">
-                <table class="w-full text-left text-[10px]">
-                    <tbody id="tabelaParcelasAquisicaoCorpo"></tbody>
+            <div class="mb-3">
+                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Data da Entrada</label>
+                <input type="date" id="inputAquisicaoDataEntrada" class="w-full rounded-lg border border-slate-300 px-2.5 py-1 text-xs bg-white">
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-3 space-y-2">
+                <h4 id="tituloFormParcelaAquisicao" class="text-[10px] font-bold uppercase text-slate-700">Adicionar Parcela</h4>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Nome</label>
+                        <input type="text" id="inputParcelaAquisicaoNome" placeholder="Ex: P1" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Vencimento</label>
+                        <input type="date" id="inputParcelaAquisicaoData" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Valor</label>
+                        <input type="number" step="0.01" id="inputParcelaAquisicaoValor" placeholder="0,00" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" id="btnSalvarParcelaAquisicao" onclick="adicionarOuAtualizarParcelaAquisicao()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1.5 rounded text-xs shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Incluir</button>
+                    <button type="button" id="btnCancelarEdicaoParcelaAquisicao" onclick="cancelarEdicaoParcelaAquisicao()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-2 py-1.5 rounded text-xs">Cancelar</button>
+                </div>
+            </div>
+            <div class="max-h-40 overflow-y-auto mb-3 border border-slate-200 rounded-lg">
+                <table class="w-full text-left border-collapse text-[11px]">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-bold">
+                            <th class="p-2">Parcela</th><th class="p-2">Vencimento</th><th class="p-2">Valor</th><th class="p-2 text-center">Status</th><th class="p-2 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaParcelasAquisicaoCorpo" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
-            <button onclick="salvarConfiguracaoAquisicao()" class="w-full bg-emerald-600 text-white py-1.5 rounded">Concluir</button>
+            <div id="emptyParcelasAquisicao" class="text-center py-2 text-slate-400 text-[11px] hidden">Nenhuma parcela.</div>
+            <div class="flex justify-end pt-2 border-t border-slate-200">
+                <button type="button" onclick="salvarConfiguracaoAquisicao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg text-xs shadow-sm">Salvar e Concluir</button>
+            </div>
         </div>
     </div>
 
-    <div id="modalParcelas" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-2">
-        <div class="bg-white rounded-xl shadow-xl max-w-xs w-full p-3 text-[11px]">
-            <div class="flex items-center justify-between mb-2">
-                <h3 id="tituloModalParcelas" class="font-bold">Parcelas</h3>
-                <button onclick="fecharModalParcelas()"><i class="fa-solid fa-xmark"></i></button>
+    <div id="modalParcelas" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-4 border border-slate-200 text-xs">
+            <div class="flex items-center justify-between mb-3">
+                <h3 id="tituloModalParcelas" class="text-sm font-bold text-slate-900 flex items-center gap-1.5"><i class="fa-solid fa-list-check text-indigo-600"></i> Parcelas</h3>
+                <button onclick="fecharModalParcelas()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
-            <div class="bg-slate-50 p-2 rounded border mb-2 space-y-1.5">
-                <input type="text" id="inputParcelaNome" placeholder="Nome" class="w-full rounded border px-2 py-0.5 text-[10px]">
-                <div class="grid grid-cols-2 gap-1">
-                    <input type="date" id="inputParcelaData" class="rounded border px-1 py-0.5 text-[10px]">
-                    <input type="number" step="0.01" id="inputParcelaValor" placeholder="Valor" class="rounded border px-1 py-0.5 text-[10px]">
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-3 space-y-2">
+                <div class="grid grid-cols-3 gap-1.5">
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Nome</label>
+                        <input type="text" id="inputParcelaNome" placeholder="Ex: P1" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Vencimento</label>
+                        <input type="date" id="inputParcelaData" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Valor</label>
+                        <input type="number" step="0.01" id="inputParcelaValor" placeholder="0,00" class="w-full rounded border border-slate-300 px-2 py-1 text-xs bg-white">
+                    </div>
                 </div>
-                <button onclick="adicionarParcelaModal()" class="w-full bg-indigo-600 text-white py-1 rounded text-[10px]">Incluir</button>
+                <button type="button" onclick="adicionarParcelaModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded text-xs shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Incluir Parcela</button>
             </div>
-            <div class="max-h-32 overflow-y-auto border rounded mb-2">
-                <table class="w-full text-left text-[10px]">
-                    <tbody id="tabelaParcelasCorpo"></tbody>
+            <div class="max-h-40 overflow-y-auto mb-3 border border-slate-200 rounded-lg">
+                <table class="w-full text-left border-collapse text-[11px]">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 uppercase font-bold">
+                            <th class="p-2">Parcela</th><th class="p-2">Vencimento</th><th class="p-2">Valor</th><th class="p-2 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaParcelasCorpo" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
-            <button onclick="fecharModalParcelas()" class="w-full bg-indigo-600 text-white py-1 rounded">Concluir</button>
+            <div id="emptyParcelas" class="text-center py-4 text-slate-400 text-[11px] hidden">Nenhuma parcela.</div>
+            <div class="flex justify-end pt-2 border-t border-slate-200">
+                <button type="button" onclick="fecharModalParcelas()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-1.5 rounded text-xs shadow-sm">Concluir</button>
+            </div>
         </div>
     </div>
 
-    <!-- Dark Mode -->
-    <button id="btnToggleDark" onclick="toggleDarkMode()" class="fixed bottom-14 right-3 p-2.5 bg-slate-800 text-white rounded-full shadow-lg z-50 text-[11px]">
+    <!-- Botão de Dark Mode -->
+    <button id="btnToggleDark" onclick="toggleDarkMode()" 
+        class="fixed bottom-16 right-4 p-3 bg-slate-800 text-white rounded-full shadow-lg hover:bg-slate-700 transition z-50 text-xs">
         <i class="fa-solid fa-moon"></i>
     </button>
 
@@ -463,12 +610,13 @@
         function mudarAba(abaId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + abaId).classList.add('active');
+
             ['painel', 'abastecimentos', 'aquisicao', 'obrigacoes'].forEach(id => {
                 const btn = document.getElementById('nav-' + id);
                 if (id === abaId) {
-                    btn.className = "flex flex-col items-center py-1 text-blue-600 font-semibold";
+                    btn.className = "flex flex-col items-center py-1.5 text-blue-600 font-semibold transition";
                 } else {
-                    btn.className = "flex flex-col items-center py-1 text-slate-400";
+                    btn.className = "flex flex-col items-center py-1.5 text-slate-400 hover:text-slate-600 transition";
                 }
             });
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -479,7 +627,8 @@
             html.classList.toggle('dark-mode');
             const isDark = html.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDark);
-            document.querySelector('#btnToggleDark i').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            const icon = document.querySelector('#btnToggleDark i');
+            icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
 
         if (localStorage.getItem('darkMode') === 'true') {
@@ -492,13 +641,18 @@
             location.reload();
         }
 
-        let veiculos = JSON.parse(localStorage.getItem('car_fleet')) || [{ id: 'veiculo_1', nome: 'Fiat Fastback (FUZ-2G43)' }];
+        let veiculos = JSON.parse(localStorage.getItem('car_fleet')) || [
+            { id: 'veiculo_1', nome: 'Fiat Fastback (FUZ-2G43)' }
+        ];
         let veiculoAtivoId = localStorage.getItem('car_active_id') || veiculos[0].id;
+
         let todasDespesas = JSON.parse(localStorage.getItem('car_fleet_expenses')) || {
             'veiculo_1': [
                 { id: 1723800000001, data: '2025-09-15', categoria: 'Abastecimento', descricao: 'Posto Inicial 2025', valor: 1500.00, km: 14000, litros: 0, precoLitro: 0 },
                 { id: 1723800000002, data: '2025-10-10', categoria: 'Lavagem', descricao: 'Lavagem Completa', valor: 120.00, km: 0 },
-                { id: 1723800000003, data: '2026-08-01', categoria: 'Abastecimento', descricao: 'Posto Shell - Gasolina', valor: 250.00, km: 15200, litros: 42.0, precoLitro: 5.95 }
+                { id: 1723800000003, data: '2026-08-01', categoria: 'Abastecimento', descricao: 'Posto Shell - Gasolina', valor: 250.00, km: 15200, litros: 42.0, precoLitro: 5.95 },
+                { id: 1723800000004, data: '2026-08-10', categoria: 'Revisão', descricao: 'Troca de óleo e filtros', valor: 400.00, km: 0 },
+                { id: 1723800000005, data: '2026-08-15', categoria: 'Seguro', descricao: 'Parcela Seguro Auto', valor: 180.00, km: 0 }
             ]
         };
 
@@ -506,23 +660,41 @@
             localStorage.setItem(`car_aq_total_${veiculoAtivoId}`, '100000');
             localStorage.setItem(`car_aq_entrada_${veiculoAtivoId}`, '90000');
             localStorage.setItem(`car_aq_data_entrada_${veiculoAtivoId}`, '2026-08-17');
-            localStorage.setItem(`car_parcelas_aquisicao_${veiculoAtivoId}`, JSON.stringify([{ id: 1, nome: 'P1', data: '2026-08-14', valor: 5000, pago: false }]));
+            const exemploParcelas = [
+                { id: 1, nome: 'Parcela 1', data: '2026-08-14', valor: 5000, pago: false },
+                { id: 2, nome: 'Parcela 2', data: '2026-09-14', valor: 5000, pago: false }
+            ];
+            localStorage.setItem(`car_parcelas_aquisicao_${veiculoAtivoId}`, JSON.stringify(exemploParcelas));
         }
 
-        let tipoParcelaAtual = null, idEditandoParcelaAquisicao = null, idProximaParcelaPendente = null;
-        function getDespesasAtuais() { if (!todasDespesas[veiculoAtivoId]) todasDespesas[veiculoAtivoId] = []; return todasDespesas[veiculoAtivoId]; }
+        let tipoParcelaAtual = null;
+        let idEditandoParcelaAquisicao = null;
+        let idProximaParcelaPendente = null;
 
-        let meuGrafico = null, meuGraficoAquisicaoCard = null, meuGraficoMensal = null, idEditando = null;
+        function getDespesasAtuais() {
+            if (!todasDespesas[veiculoAtivoId]) todasDespesas[veiculoAtivoId] = [];
+            return todasDespesas[veiculoAtivoId];
+        }
+
+        let meuGrafico = null;
+        let meuGraficoAquisicaoCard = null;
+        let meuGraficoMensal = null;
+        let idEditando = null;
+
         const listaCategorias = ['Abastecimento', 'Aquisição de veículo', 'IPVA', 'Licenciamento', 'Seguro', 'Revisão', 'Multa', 'Acessórios', 'Lavagem', 'Sem Parar', 'Outros'];
         const coresCategorias = ['#2563eb', '#1e1b4b', '#d97706', '#059669', '#7c3aed', '#dc2626', '#db2777', '#4f46e5', '#0d9488', '#0ea5e9', '#ca8a04'];
         const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
         document.getElementById('data').valueAsDate = new Date('2026-08-17');
 
         async function salvarNoFirebase() {
             if (!window.db) return;
             try {
-                await window.FirestoreSDK.setDoc(window.FirestoreSDK.doc(window.db, "gestao", "dados_app"), { veiculos, veiculoAtivoId, todasDespesas });
-            } catch (e) { console.error(e); }
+                const dadosParaSalvar = { veiculos, veiculoAtivoId, todasDespesas };
+                await window.FirestoreSDK.setDoc(window.FirestoreSDK.doc(window.db, "gestao", "dados_app"), dadosParaSalvar);
+            } catch (e) {
+                console.error("Erro ao salvar no Firestore:", e);
+            }
         }
 
         async function carregarDoFirebase() {
@@ -534,129 +706,335 @@
                     if (data.veiculos) veiculos = data.veiculos;
                     if (data.veiculoAtivoId) veiculoAtivoId = data.veiculoAtivoId;
                     if (data.todasDespesas) todasDespesas = data.todasDespesas;
-                    popularSeletorVeiculos(); carregarConfiguracoesVeiculo(); popularFiltroAnos(); atualizarInterface();
+                    
+                    popularSeletorVeiculos();
+                    carregarConfiguracoesVeiculo();
+                    popularFiltroAnos();
+                    atualizarInterface();
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error("Erro ao carregar do Firestore:", e);
+            }
         }
 
         function verificarCategoriaAbastecimento() {
-            const cat = document.getElementById('categoria').value;
-            document.getElementById('blocoKm').classList.toggle('hidden', cat !== 'Abastecimento');
-            document.getElementById('camposAbastecimento').classList.toggle('hidden', cat !== 'Abastecimento');
-            if (cat !== 'Abastecimento') { document.getElementById('km').value = ''; document.getElementById('litros').value = ''; document.getElementById('precoLitro').value = ''; }
+            const categoria = document.getElementById('categoria').value;
+            const blocoKm = document.getElementById('blocoKm');
+            const inputKm = document.getElementById('km');
+            const containerAbastecimento = document.getElementById('camposAbastecimento');
+
+            if (categoria === 'Abastecimento') {
+                blocoKm.classList.remove('hidden');
+                inputKm.setAttribute('required', 'required');
+                containerAbastecimento.classList.remove('hidden');
+            } else {
+                blocoKm.classList.add('hidden');
+                inputKm.removeAttribute('required');
+                inputKm.value = '';
+                containerAbastecimento.classList.add('hidden');
+                document.getElementById('litros').value = '';
+                document.getElementById('precoLitro').value = '';
+            }
         }
 
         function calcularAbastecimento() {
-            const lit = parseFloat(document.getElementById('litros').value), pre = parseFloat(document.getElementById('precoLitro').value), val = parseFloat(document.getElementById('valor').value);
+            const litrosInput = document.getElementById('litros');
+            const precoInput = document.getElementById('precoLitro');
+            const valorInput = document.getElementById('valor');
+
+            const litros = parseFloat(litrosInput.value);
+            const precoLitro = parseFloat(precoInput.value);
+            const valor = parseFloat(valorInput.value);
             const activeId = document.activeElement ? document.activeElement.id : '';
-            if (activeId === 'valor' && !isNaN(val) && !isNaN(pre) && pre > 0) document.getElementById('litros').value = (val / pre).toFixed(3);
-            else if (activeId === 'litros' && !isNaN(lit) && !isNaN(pre) && pre > 0) document.getElementById('valor').value = (lit * pre).toFixed(2);
+
+            if (activeId === 'valor' && !isNaN(valor) && !isNaN(precoLitro) && precoLitro > 0) {
+                litrosInput.value = (valor / precoLitro).toFixed(3);
+            } else if (activeId === 'litros' && !isNaN(litros) && !isNaN(precoLitro) && precoLitro > 0) {
+                valorInput.value = (litros * precoLitro).toFixed(2);
+            } else if (activeId === 'precoLitro') {
+                if (!isNaN(valor) && isNaN(litros) && precoLitro > 0) litrosInput.value = (valor / precoLitro).toFixed(3);
+                else if (!isNaN(litros) && precoLitro > 0) valorInput.value = (litros * precoLitro).toFixed(2);
+            }
         }
 
         function popularSeletorVeiculos() {
             const select = document.getElementById('selectVeiculoAtivo');
             select.innerHTML = '';
             veiculos.forEach(v => {
-                const opt = document.createElement('option'); opt.value = v.id; opt.textContent = v.nome;
-                if (v.id === veiculoAtivoId) opt.selected = true; select.appendChild(opt);
+                const opt = document.createElement('option');
+                opt.value = v.id;
+                opt.textContent = v.nome;
+                if (v.id === veiculoAtivoId) opt.selected = true;
+                select.appendChild(opt);
             });
         }
 
         function trocarVeiculoAtivo() {
-            veiculoAtivoId = document.getElementById('selectVeiculoAtivo').value;
+            const select = document.getElementById('selectVeiculoAtivo');
+            veiculoAtivoId = select.value;
             localStorage.setItem('car_active_id', veiculoAtivoId);
-            cancelarEdicao(); carregarConfiguracoesVeiculo(); popularFiltroAnos(); atualizarInterface(); salvarNoFirebase();
+            cancelarEdicao();
+            carregarConfiguracoesVeiculo();
+            popularFiltroAnos();
+            atualizarInterface();
+            salvarNoFirebase();
         }
 
-        function abrirModalNovoVeiculo() { document.getElementById('inputModalModelo').value = ''; document.getElementById('inputModalPlaca').value = ''; document.getElementById('modalNovoVeiculo').classList.remove('hidden'); }
+        function abrirModalNovoVeiculo() {
+            document.getElementById('inputModalModelo').value = '';
+            document.getElementById('inputModalPlaca').value = '';
+            document.getElementById('modalNovoVeiculo').classList.remove('hidden');
+            document.getElementById('inputModalModelo').focus();
+        }
+
         function fecharModalNovoVeiculo() { document.getElementById('modalNovoVeiculo').classList.add('hidden'); }
 
         function abrirModalAquisicao() {
             document.getElementById('inputAquisicaoTotal').value = localStorage.getItem(`car_aq_total_${veiculoAtivoId}`) || '';
             document.getElementById('inputAquisicaoEntrada').value = localStorage.getItem(`car_aq_entrada_${veiculoAtivoId}`) || '';
             document.getElementById('inputAquisicaoDataEntrada').value = localStorage.getItem(`car_aq_data_entrada_${veiculoAtivoId}`) || '';
-            renderizarTabelaParcelasAquisicao(); document.getElementById('modalAquisicao').classList.remove('hidden');
+            cancelarEdicaoParcelaAquisicao();
+            renderizarTabelaParcelasAquisicao();
+            document.getElementById('modalAquisicao').classList.remove('hidden');
         }
-        function fecharModalAquisicao() { document.getElementById('modalAquisicao').classList.add('hidden'); atualizarResumoAquisicao(); atualizarGraficoAquisicaoCard(); }
 
-        function obterParcelasAquisicaoAtuais() { return JSON.parse(localStorage.getItem(`car_parcelas_aquisicao_${veiculoAtivoId}`)) || []; }
-        function salvarParcelasAquisicaoAtuais(p) { localStorage.setItem(`car_parcelas_aquisicao_${veiculoAtivoId}`, JSON.stringify(p)); }
+        function fecharModalAquisicao() {
+            document.getElementById('modalAquisicao').classList.add('hidden');
+            atualizarResumoAquisicao();
+            atualizarGraficoAquisicaoCard();
+        }
+
+        function getParcelasAquisicaoKey() { return `car_parcelas_aquisicao_${veiculoAtivoId}`; }
+        function obterParcelasAquisicaoAtuais() { return JSON.parse(localStorage.getItem(getParcelasAquisicaoKey())) || []; }
+        function salvarParcelasAquisicaoAtuais(parcelas) { localStorage.setItem(getParcelasAquisicaoKey(), JSON.stringify(parcelas)); }
 
         function adicionarOuAtualizarParcelaAquisicao() {
-            const nome = document.getElementById('inputParcelaAquisicaoNome').value.trim(), data = document.getElementById('inputParcelaAquisicaoData').value, valor = parseFloat(document.getElementById('inputParcelaAquisicaoValor').value) || 0;
-            if (!nome || !data || valor <= 0) return;
+            const nome = document.getElementById('inputParcelaAquisicaoNome').value.trim();
+            const data = document.getElementById('inputParcelaAquisicaoData').value;
+            const valor = parseFloat(document.getElementById('inputParcelaAquisicaoValor').value) || 0;
+
+            if (!nome || !data || valor <= 0) {
+                alert("Informe nome, vencimento e valor válido.");
+                return;
+            }
+
             let parcelas = obterParcelasAquisicaoAtuais();
-            parcelas.push({ id: Date.now(), nome, data, valor, pago: false });
+            if (idEditandoParcelaAquisicao !== null) {
+                const p = parcelas.find(item => item.id === idEditandoParcelaAquisicao);
+                if (p) { p.nome = nome; p.data = data; p.valor = valor; }
+                cancelarEdicaoParcelaAquisicao();
+            } else {
+                parcelas.push({ id: Date.now(), nome, data, valor, pago: false });
+            }
+
             parcelas.sort((a, b) => new Date(a.data) - new Date(b.data));
             salvarParcelasAquisicaoAtuais(parcelas);
-            document.getElementById('inputParcelaAquisicaoNome').value = ''; document.getElementById('inputParcelaAquisicaoData').value = ''; document.getElementById('inputParcelaAquisicaoValor').value = '';
+            document.getElementById('inputParcelaAquisicaoNome').value = '';
+            document.getElementById('inputParcelaAquisicaoData').value = '';
+            document.getElementById('inputParcelaAquisicaoValor').value = '';
             renderizarTabelaParcelasAquisicao();
         }
 
-        function togglePagoParcelaAquisicao(id) {
-            let p = obterParcelasAquisicaoAtuais(); const item = p.find(x => x.id === id);
-            if (item) { item.pago = !item.pago; salvarParcelasAquisicaoAtuais(p); atualizarResumoAquisicao(); atualizarGraficoAquisicaoCard(); renderizarTabelaParcelasAquisicao(); }
+        function carregarEdicaoParcelaAquisicao(id) {
+            let parcelas = obterParcelasAquisicaoAtuais();
+            const p = parcelas.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('inputParcelaAquisicaoNome').value = p.nome;
+            document.getElementById('inputParcelaAquisicaoData').value = p.data;
+            document.getElementById('inputParcelaAquisicaoValor').value = p.valor;
+            idEditandoParcelaAquisicao = id;
+            document.getElementById('tituloFormParcelaAquisicao').innerText = "Editar Parcela";
+            document.getElementById('btnSalvarParcelaAquisicao').innerHTML = '<i class="fa-solid fa-pen mr-1"></i> Salvar';
+            document.getElementById('btnCancelarEdicaoParcelaAquisicao').classList.remove('hidden');
         }
 
-        function marcarProximaComoPaga() { if (idProximaParcelaPendente !== null) togglePagoParcelaAquisicao(idProximaParcelaPendente); }
-        function excluirParcelaAquisicaoModal(id) { salvarParcelasAquisicaoAtuais(obterParcelasAquisicaoAtuais().filter(x => x.id !== id)); renderizarTabelaParcelasAquisicao(); }
+        function cancelarEdicaoParcelaAquisicao() {
+            idEditandoParcelaAquisicao = null;
+            document.getElementById('inputParcelaAquisicaoNome').value = '';
+            document.getElementById('inputParcelaAquisicaoData').value = '';
+            document.getElementById('inputParcelaAquisicaoValor').value = '';
+            document.getElementById('tituloFormParcelaAquisicao').innerText = "Adicionar Parcela";
+            document.getElementById('btnSalvarParcelaAquisicao').innerHTML = '<i class="fa-solid fa-plus mr-1"></i> Incluir';
+            document.getElementById('btnCancelarEdicaoParcelaAquisicao').classList.add('hidden');
+        }
+
+        function togglePagoParcelaAquisicao(id) {
+            let parcelas = obterParcelasAquisicaoAtuais();
+            const p = parcelas.find(item => item.id === id);
+            if (p) {
+                p.pago = !p.pago;
+                salvarParcelasAquisicaoAtuais(parcelas);
+                atualizarResumoAquisicao();
+                atualizarGraficoAquisicaoCard();
+                if (!document.getElementById('modalAquisicao').classList.contains('hidden')) renderizarTabelaParcelasAquisicao();
+            }
+        }
+
+        function marcarProximaComoPaga() {
+            if (idProximaParcelaPendente !== null) togglePagoParcelaAquisicao(idProximaParcelaPendente);
+        }
+
+        function excluirParcelaAquisicaoModal(id) {
+            if (id === idEditandoParcelaAquisicao) cancelarEdicaoParcelaAquisicao();
+            let parcelas = obterParcelasAquisicaoAtuais().filter(p => p.id !== id);
+            salvarParcelasAquisicaoAtuais(parcelas);
+            renderizarTabelaParcelasAquisicao();
+        }
 
         function renderizarTabelaParcelasAquisicao() {
-            const tbody = document.getElementById('tabelaParcelasAquisicaoCorpo'); tbody.innerHTML = '';
-            obterParcelasAquisicaoAtuais().forEach(p => {
-                tbody.innerHTML += `<tr class="border-b"><td class="p-1">${p.nome} (${formatarDataSimples(p.data)})</td><td class="p-1">${formatarMoeda(p.valor)}</td><td class="p-1 text-center"><button onclick="togglePagoParcelaAquisicao(${p.id})" class="px-1.5 py-0.5 rounded text-[9px] ${p.pago ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${p.pago ? 'Pago' : 'Pendente'}</button></td><td class="p-1 text-center"><button onclick="excluirParcelaAquisicaoModal(${p.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            const tbody = document.getElementById('tabelaParcelasAquisicaoCorpo');
+            const emptyEl = document.getElementById('emptyParcelasAquisicao');
+            tbody.innerHTML = '';
+            let parcelas = obterParcelasAquisicaoAtuais();
+            if (parcelas.length === 0) { emptyEl.classList.remove('hidden'); return; }
+            emptyEl.classList.add('hidden');
+
+            parcelas.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-medium text-slate-800">${p.nome}</td>
+                    <td class="p-2.5 text-slate-600">${formatarDataSimples(p.data)}</td>
+                    <td class="p-2.5 text-slate-600">${formatarMoeda(p.valor)}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="togglePagoParcelaAquisicao(${p.id})" class="px-2 py-1 rounded text-[10px] font-bold ${p.pago ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${p.pago ? 'Pago' : 'Pendente'}</button>
+                    </td>
+                    <td class="p-2.5 text-center whitespace-nowrap">
+                        <button onclick="carregarEdicaoParcelaAquisicao(${p.id})" class="text-slate-400 hover:text-amber-600 p-1 mr-1"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="excluirParcelaAquisicaoModal(${p.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+                tbody.appendChild(tr);
             });
         }
 
         function salvarConfiguracaoAquisicao() {
-            localStorage.setItem(`car_aq_total_${veiculoAtivoId}`, parseFloat(document.getElementById('inputAquisicaoTotal').value) || 0);
-            localStorage.setItem(`car_aq_entrada_${veiculoAtivoId}`, parseFloat(document.getElementById('inputAquisicaoEntrada').value) || 0);
-            localStorage.setItem(`car_aq_data_entrada_${veiculoAtivoId}`, document.getElementById('inputAquisicaoDataEntrada').value);
-            fecharModalAquisicao(); atualizarInterface();
+            const total = parseFloat(document.getElementById('inputAquisicaoTotal').value) || 0;
+            const entrada = parseFloat(document.getElementById('inputAquisicaoEntrada').value) || 0;
+            const dataEntrada = document.getElementById('inputAquisicaoDataEntrada').value;
+
+            localStorage.setItem(`car_aq_total_${veiculoAtivoId}`, total);
+            localStorage.setItem(`car_aq_entrada_${veiculoAtivoId}`, entrada);
+            localStorage.setItem(`car_aq_data_entrada_${veiculoAtivoId}`, dataEntrada);
+
+            if (entrada > 0 && dataEntrada) {
+                let despesas = getDespesasAtuais();
+                let indexEntrada = despesas.findIndex(d => d.categoria === 'Aquisição de veículo' && d.descricao.toLowerCase().includes('entrada'));
+                if (indexEntrada !== -1) { despesas[indexEntrada].valor = entrada; despesas[indexEntrada].data = dataEntrada; }
+                else { despesas.push({ id: Date.now(), data: dataEntrada, categoria: 'Aquisição de veículo', descricao: 'Entrada Veículo', valor: entrada, km: 0, litros: 0, precoLitro: 0 }); }
+                salvarNoLocalStorage();
+            }
+
+            fecharModalAquisicao();
+            atualizarInterface();
+            alert('Configuração salva com sucesso!');
         }
 
         function atualizarResumoAquisicao() {
             const total = parseFloat(localStorage.getItem(`car_aq_total_${veiculoAtivoId}`)) || 0;
             const entrada = parseFloat(localStorage.getItem(`car_aq_entrada_${veiculoAtivoId}`)) || 0;
-            const parcelas = obterParcelasAquisicaoAtuais();
-            const pagas = parcelas.filter(p => p.pago).length;
+            let parcelas = obterParcelasAquisicaoAtuais();
+            let pagas = parcelas.filter(p => p.pago).length;
+            let totalParcelas = parcelas.length;
+
             document.getElementById('resumoValorTotal').innerText = formatarMoeda(total);
             document.getElementById('resumoValorEntrada').innerText = formatarMoeda(entrada);
-            document.getElementById('resumoStatusParcelas').innerText = `${pagas} / ${parcelas.length}`;
+            document.getElementById('resumoStatusParcelas').innerText = `${pagas} / ${totalParcelas}`;
 
-            const pendentes = parcelas.filter(p => !p.pago);
-            const btnPaga = document.getElementById('btnMarcarPagaProxima');
-            const statusBadge = document.getElementById('statusPrazoParcelaAquisicao');
+            const textoEl = document.getElementById('textoProximaParcelaAquisicao');
+            const statusBadgeEl = document.getElementById('statusPrazoParcelaAquisicao');
+            const btnMarcarPaga = document.getElementById('btnMarcarPagaProxima');
+            let pendentes = parcelas.filter(p => !p.pago);
+
             if (pendentes.length === 0) {
-                idProximaParcelaPendente = null; btnPaga.classList.add('hidden');
-                document.getElementById('textoProximaParcelaAquisicao').innerText = "Quitado!";
-                statusBadge.innerText = "Ok";
+                idProximaParcelaPendente = null;
+                btnMarcarPaga.classList.add('hidden');
+                textoEl.innerText = totalParcelas === 0 ? "Nenhuma parcela cadastrada." : "Todas as parcelas quitadas!";
+                statusBadgeEl.innerText = totalParcelas === 0 ? "Sem parcelas" : "Quitado";
+                statusBadgeEl.className = totalParcelas === 0 ? "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap" : "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 whitespace-nowrap";
             } else {
                 pendentes.sort((a, b) => new Date(a.data) - new Date(b.data));
-                idProximaParcelaPendente = pendentes[0].id;
-                document.getElementById('textoProximaParcelaAquisicao').innerHTML = `<strong>${pendentes[0].nome}</strong> (${formatarMoeda(pendentes[0].valor)})`;
-                statusBadge.innerText = formatarDataSimples(pendentes[0].data);
-                btnPaga.classList.remove('hidden');
+                let proxima = pendentes[0];
+                idProximaParcelaPendente = proxima.id;
+                let statusInfo = calcularStatusDias(proxima.data);
+                textoEl.innerHTML = `<strong>${proxima.nome}</strong> (${formatarMoeda(proxima.valor)}) — Vencimento em <strong>${formatarDataSimples(proxima.data)}</strong>`;
+                statusBadgeEl.innerText = statusInfo.textoCurto;
+                statusBadgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${statusInfo.classeBadge}`;
+                btnMarcarPaga.classList.remove('hidden');
             }
         }
 
         function abrirModalParcelas(tipo, titulo) {
-            tipoParcelaAtual = tipo; document.getElementById('tituloModalParcelas').innerText = `Parcelas: ${titulo}`;
-            renderizarTabelaParcelas(); document.getElementById('modalParcelas').classList.remove('hidden');
+            tipoParcelaAtual = tipo;
+            document.getElementById('tituloModalParcelas').innerHTML = `<i class="fa-solid fa-list-check text-indigo-600"></i> Parcelas de ${titulo}`;
+            document.getElementById('inputParcelaNome').value = '';
+            document.getElementById('inputParcelaData').value = '';
+            document.getElementById('inputParcelaValor').value = '';
+            renderizarTabelaParcelas();
+            document.getElementById('modalParcelas').classList.remove('hidden');
         }
-        function fecharModalParcelas() { document.getElementById('modalParcelas').classList.add('hidden'); verificarStatusVencimentos(); }
-        function obterParcelasAtuais() { return JSON.parse(localStorage.getItem(`car_parcelas_${tipoParcelaAtual}_${veiculoAtivoId}`)) || []; }
+
+        function fecharModalParcelas() {
+            document.getElementById('modalParcelas').classList.add('hidden');
+            atualizarDataPrincipalPorParcelas();
+            verificarStatusVencimentos();
+        }
+
+        function getParcelasKey() { return `car_parcelas_${tipoParcelaAtual}_${veiculoAtivoId}`; }
+        function obterParcelasAtuais() { return JSON.parse(localStorage.getItem(getParcelasKey())) || []; }
+        function salvarParcelasAtuais(parcelas) { localStorage.setItem(getParcelasKey(), JSON.stringify(parcelas)); }
+
         function adicionarParcelaModal() {
-            const nome = document.getElementById('inputParcelaNome').value, data = document.getElementById('inputParcelaData').value, valor = parseFloat(document.getElementById('inputParcelaValor').value) || 0;
-            if (!nome || !data) return;
-            let p = obterParcelasAtuais(); p.push({ id: Date.now(), nome, data, valor });
-            localStorage.setItem(`car_parcelas_${tipoParcelaAtual}_${veiculoAtivoId}`, JSON.stringify(p));
+            const nome = document.getElementById('inputParcelaNome').value.trim();
+            const data = document.getElementById('inputParcelaData').value;
+            const valor = parseFloat(document.getElementById('inputParcelaValor').value) || 0;
+            if (!nome || !data) { alert("Informe nome e vencimento."); return; }
+            let parcelas = obterParcelasAtuais();
+            parcelas.push({ id: Date.now(), nome, data, valor });
+            parcelas.sort((a, b) => new Date(a.data) - new Date(b.data));
+            salvarParcelasAtuais(parcelas);
+            document.getElementById('inputParcelaNome').value = '';
+            document.getElementById('inputParcelaData').value = '';
+            document.getElementById('inputParcelaValor').value = '';
             renderizarTabelaParcelas();
         }
+
+        function excluirParcelaModal(id) {
+            let parcelas = obterParcelasAtuais().filter(p => p.id !== id);
+            salvarParcelasAtuais(parcelas);
+            renderizarTabelaParcelas();
+        }
+
         function renderizarTabelaParcelas() {
-            const tbody = document.getElementById('tabelaParcelasCorpo'); tbody.innerHTML = '';
-            obterParcelasAtuais().forEach(p => {
-                tbody.innerHTML += `<tr class="border-b"><td class="p-1">${p.nome} (${formatarDataSimples(p.data)})</td><td class="p-1">${formatarMoeda(p.valor)}</td><td class="p-1 text-center"><button onclick="let arr=obterParcelasAtuais().filter(x=>x.id!==${p.id});localStorage.setItem('car_parcelas_${tipoParcelaAtual}_${veiculoAtivoId}',JSON.stringify(arr));renderizarTabelaParcelas();" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            const tbody = document.getElementById('tabelaParcelasCorpo');
+            const emptyEl = document.getElementById('emptyParcelas');
+            tbody.innerHTML = '';
+            let parcelas = obterParcelasAtuais();
+            if (parcelas.length === 0) { emptyEl.classList.remove('hidden'); return; }
+            emptyEl.classList.add('hidden');
+            parcelas.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2 font-medium text-slate-800">${p.nome}</td>
+                    <td class="p-2 text-slate-600">${formatarDataSimples(p.data)}</td>
+                    <td class="p-2 text-slate-600">${p.valor > 0 ? formatarMoeda(p.valor) : '-'}</td>
+                    <td class="p-2 text-center"><button onclick="excluirParcelaModal(${p.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function atualizarDataPrincipalPorParcelas() {
+            ['ipva', 'lic', 'seg'].forEach(tipo => {
+                let parcelas = JSON.parse(localStorage.getItem(`car_parcelas_${tipo}_${veiculoAtivoId}`)) || [];
+                if (parcelas.length > 0) {
+                    const hoje = new Date('2026-08-17');
+                    hoje.setHours(0,0,0,0);
+                    parcelas.sort((a, b) => new Date(a.data) - new Date(b.data));
+                    let proxima = parcelas.find(p => new Date(p.data) >= hoje) || parcelas[0];
+                    const inputId = tipo === 'ipva' ? 'vencimentoIpva' : (tipo === 'lic' ? 'vencimentoLicenciamento' : 'vencimentoSeguro');
+                    document.getElementById(inputId).value = proxima.data;
+                    localStorage.setItem(`car_venc_${tipo}_${veiculoAtivoId}`, proxima.data);
+                }
             });
         }
 
@@ -667,178 +1045,332 @@
         }
 
         function salvarNovoVeiculoModal() {
-            const modelo = document.getElementById('inputModalModelo').value.trim(), placa = document.getElementById('inputModalPlaca').value.trim();
-            if (!modelo) return;
+            const modelo = document.getElementById('inputModalModelo').value.trim();
+            const placa = document.getElementById('inputModalPlaca').value.trim();
+            if (!modelo) { alert("Informe o modelo."); return; }
+            const nomeFormatado = placa ? `${modelo} (${placa})` : modelo;
             const novoId = 'veiculo_' + Date.now();
-            veiculos.push({ id: novoId, nome: placa ? `${modelo} (${placa})` : modelo });
+            veiculos.push({ id: novoId, nome: nomeFormatado });
             todasDespesas[novoId] = [];
             localStorage.setItem('car_fleet', JSON.stringify(veiculos));
             localStorage.setItem('car_fleet_expenses', JSON.stringify(todasDespesas));
-            veiculoAtivoId = novoId; localStorage.setItem('car_active_id', veiculoAtivoId);
-            fecharModalNovoVeiculo(); popularSeletorVeiculos(); carregarConfiguracoesVeiculo(); popularFiltroAnos(); atualizarInterface(); salvarNoFirebase();
+            veiculoAtivoId = novoId;
+            localStorage.setItem('car_active_id', veiculoAtivoId);
+            fecharModalNovoVeiculo();
+            popularSeletorVeiculos();
+            carregarConfiguracoesVeiculo();
+            popularFiltroAnos();
+            atualizarInterface();
+            salvarNoFirebase();
         }
 
         function carregarConfiguracoesVeiculo() {
             document.getElementById('inputProximaRevisao').value = localStorage.getItem(`car_next_service_${veiculoAtivoId}`) || '';
             document.getElementById('inputDataRevisao').value = localStorage.getItem(`car_next_service_date_${veiculoAtivoId}`) || '';
             document.getElementById('inputDataCompra').value = localStorage.getItem(`car_purchase_date_${veiculoAtivoId}`) || '';
-            ['Ipva', 'Licenciamento', 'Seguro'].forEach(t => { document.getElementById('vencimento' + t).value = localStorage.getItem(`car_venc_${t.toLowerCase()}_${veiculoAtivoId}`) || ''; });
+            document.getElementById('vencimentoIpva').value = localStorage.getItem(`car_venc_ipva_${veiculoAtivoId}`) || '';
+            document.getElementById('vencimentoLicenciamento').value = localStorage.getItem(`car_venc_lic_${veiculoAtivoId}`) || '';
+            document.getElementById('vencimentoSeguro').value = localStorage.getItem(`car_venc_seg_${veiculoAtivoId}`) || '';
             document.getElementById('vencimentoCnhAndrey').value = localStorage.getItem(`car_venc_cnh_andrey_${veiculoAtivoId}`) || '';
             document.getElementById('vencimentoCnhTiago').value = localStorage.getItem(`car_venc_cnh_tiago_${veiculoAtivoId}`) || '';
-            verificarStatusVencimentos(); atualizarResumoAquisicao();
+            atualizarDataPrincipalPorParcelas();
+            verificarStatusVencimentos();
+            atualizarResumoAquisicao();
         }
 
         function salvarDataCompra() { localStorage.setItem(`car_purchase_date_${veiculoAtivoId}`, document.getElementById('inputDataCompra').value); }
         function salvarProximaRevisao() {
             localStorage.setItem(`car_next_service_${veiculoAtivoId}`, document.getElementById('inputProximaRevisao').value);
             localStorage.setItem(`car_next_service_date_${veiculoAtivoId}`, document.getElementById('inputDataRevisao').value);
-            atualizarContadorRevisao(); alert('Salvo!');
-        }
-        function salvarVencimentos() {
-            ['Ipva', 'Licenciamento', 'Seguro'].forEach(t => { localStorage.setItem(`car_venc_${t.toLowerCase()}_${veiculoAtivoId}`, document.getElementById('vencimento' + t).value); });
-            localStorage.setItem(`car_venc_cnh_andrey_${veiculoAtivoId}`, document.getElementById('vencimentoCnhAndrey').value);
-            localStorage.setItem(`car_venc_cnh_tiago_${veiculoAtivoId}`, document.getElementById('vencimentoCnhTiago').value);
-            verificarStatusVencimentos(); alert('Salvo!');
+            atualizarContadorRevisao();
+            alert('Metas de revisão salvas!');
         }
 
-        function formatarDataSimples(d) { if (!d) return ''; const [a, m, dt] = d.split('-'); return `${dt}/${m}/${a}`; }
-        function calcularStatusDias(d) {
-            if (!d) return { texto: 'Não informado', classe: 'text-slate-400' };
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
-            const [a, m, dt] = d.split('-'); const venc = new Date(a, m-1, dt);
-            const diff = Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
-            if (diff < 0) return { texto: `Vencido há ${Math.abs(diff)}d`, classe: 'text-red-600 font-bold' };
-            if (diff === 0) return { texto: `Vence HOJE!`, classe: 'text-red-600 font-bold' };
-            return { texto: `Faltam ${diff}d`, classe: 'text-emerald-600' };
+        function salvarVencimentos() {
+            localStorage.setItem(`car_venc_ipva_${veiculoAtivoId}`, document.getElementById('vencimentoIpva').value);
+            localStorage.setItem(`car_venc_lic_${veiculoAtivoId}`, document.getElementById('vencimentoLicenciamento').value);
+            localStorage.setItem(`car_venc_seg_${veiculoAtivoId}`, document.getElementById('vencimentoSeguro').value);
+            localStorage.setItem(`car_venc_cnh_andrey_${veiculoAtivoId}`, document.getElementById('vencimentoCnhAndrey').value);
+            localStorage.setItem(`car_venc_cnh_tiago_${veiculoAtivoId}`, document.getElementById('vencimentoCnhTiago').value);
+            verificarStatusVencimentos();
+            alert('Datas salvas!');
         }
+
+        function formatarDataSimples(dataIso) {
+            if (!dataIso) return '';
+            const [ano, mes, dia] = dataIso.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function calcularStatusDias(dataIso) {
+            if (!dataIso) return { texto: 'Não informado', textoCurto: 'Não informado', classe: 'text-slate-400', classeBadge: 'bg-slate-100 text-slate-600' };
+            const hoje = new Date('2026-08-17'); hoje.setHours(0,0,0,0);
+            const partes = dataIso.split('-');
+            const dataVenc = new Date(partes[0], partes[1]-1, partes[2]); dataVenc.setHours(0,0,0,0);
+            const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));
+            const dataFormatada = formatarDataSimples(dataIso);
+
+            if (diffDays < 0) return { texto: `Vencido em ${dataFormatada} (${Math.abs(diffDays)}d atrás)`, textoCurto: `Vencido há ${Math.abs(diffDays)}d`, classe: 'text-red-600', classeBadge: 'bg-red-100 text-red-700' };
+            if (diffDays === 0) return { texto: `Vence HOJE!`, textoCurto: 'Vence HOJE!', classe: 'text-red-600 font-bold', classeBadge: 'bg-red-100 text-red-700 font-bold animate-pulse' };
+            if (diffDays <= 30) return { texto: `Vence em ${diffDays}d (${dataFormatada})`, textoCurto: `Vence em ${diffDays}d`, classe: 'text-amber-600 font-bold', classeBadge: 'bg-amber-100 text-amber-800' };
+            return { texto: `Vence em ${dataFormatada} (${diffDays}d)`, textoCurto: `Faltam ${diffDays}d`, classe: 'text-emerald-600', classeBadge: 'bg-emerald-100 text-emerald-800' };
+        }
+
         function verificarStatusVencimentos() {
-            ['Ipva', 'Licenciamento', 'Seguro', 'CnhAndrey', 'CnhTiago'].forEach(t => {
-                const res = calcularStatusDias(document.getElementById('vencimento' + t).value);
-                const el = document.getElementById('status' + t); if (el) { el.innerText = res.texto; el.className = `block text-[8px] font-bold mt-0.5 ${res.classe}`; }
+            ['Ipva', 'Licenciamento', 'Seguro', 'CnhAndrey', 'CnhTiago'].forEach(tipo => {
+                const val = document.getElementById('vencimento' + tipo).value;
+                const res = calcularStatusDias(val);
+                const el = document.getElementById('status' + tipo);
+                el.innerText = res.texto;
+                el.className = `text-[9px] font-bold mt-1 ${res.classe}`;
             });
         }
 
         function atualizarContadorRevisao() {
-            const meta = document.getElementById('inputProximaRevisao').value;
-            let maior = 0; getDespesasAtuais().forEach(d => { if (d.km > maior) maior = d.km; });
-            document.getElementById('obsRevisao').innerText = meta ? `Faltam ${(parseInt(meta) - maior).toLocaleString()} km` : "Meta não definida";
+            const metaKmInput = document.getElementById('inputProximaRevisao').value;
+            const dataLimiteInput = document.getElementById('inputDataRevisao').value;
+            const obsEl = document.getElementById('obsRevisao');
+            let maiorKm = 0;
+            getDespesasAtuais().forEach(d => { if (d.km > maiorKm) maiorKm = d.km; });
+
+            let statusKm = metaKmInput ? { diff: parseInt(metaKmInput) - maiorKm, meta: parseInt(metaKmInput) } : null;
+            let statusData = dataLimiteInput ? { days: Math.ceil((new Date(dataLimiteInput) - new Date('2026-08-17')) / (1000*60*60*24)), dataStr: formatarDataSimples(dataLimiteInput) } : null;
+
+            if (!statusKm && !statusData) { obsEl.innerText = "Defina meta de km e/ou data."; return; }
+            let mensagem = "";
+            if (statusKm && statusData) {
+                if (statusKm.diff <= 0 || statusData.days <= 0) mensagem = "Atenção: Meta atingida!";
+                else mensagem = `Faltam ${statusKm.diff.toLocaleString()} km ou até ${statusData.dataStr} (${statusData.days}d).`;
+            } else if (statusKm) {
+                mensagem = statusKm.diff >= 0 ? `Faltam ${statusKm.diff.toLocaleString()} km.` : `Meta ultrapassada em ${Math.abs(statusKm.diff).toLocaleString()} km!`;
+            } else if (statusData) {
+                mensagem = statusData.days >= 0 ? `Faltam ${statusData.days} dias.` : `Data vencida!`;
+            }
+            obsEl.innerText = mensagem;
         }
 
-        function salvarNoLocalStorage() { localStorage.setItem('car_fleet_expenses', JSON.stringify(todasDespesas)); salvarNoFirebase(); }
+        function salvarNoLocalStorage() {
+            localStorage.setItem('car_fleet_expenses', JSON.stringify(todasDespesas));
+            salvarNoFirebase();
+        }
+
         function popularFiltroAnos() {
-            const sel = document.getElementById('filtroAno'); let anos = new Set([new Date().getFullYear().toString()]);
+            const selectAno = document.getElementById('filtroAno');
+            let anos = new Set([new Date('2026-08-17').getFullYear().toString()]);
             getDespesasAtuais().forEach(d => { if (d.data) anos.add(d.data.split('-')[0]); });
-            sel.innerHTML = ''; Array.from(anos).sort((a,b)=>b-a).forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
+            const ordenados = Array.from(anos).sort((a,b) => b-a);
+            const atual = selectAno.value;
+            selectAno.innerHTML = '';
+            ordenados.forEach(ano => {
+                const opt = document.createElement('option');
+                opt.value = ano; opt.textContent = ano;
+                selectAno.appendChild(opt);
+            });
+            if (ordenados.includes(atual)) selectAno.value = atual;
         }
 
-        function salvarDespesa(e) {
-            e.preventDefault();
-            const data = document.getElementById('data').value, categoria = document.getElementById('categoria').value, descricao = document.getElementById('descricao').value, valor = parseFloat(document.getElementById('valor').value);
+        function salvarDespesa(event) {
+            event.preventDefault();
+            const data = document.getElementById('data').value;
+            const categoria = document.getElementById('categoria').value;
+            const descricao = document.getElementById('descricao').value;
+            const valor = parseFloat(document.getElementById('valor').value);
             let despesas = getDespesasAtuais();
             const km = categoria === 'Abastecimento' ? parseInt(document.getElementById('km').value) || 0 : 0;
             const litros = categoria === 'Abastecimento' ? parseFloat(document.getElementById('litros').value) || 0 : 0;
             const precoLitro = categoria === 'Abastecimento' ? parseFloat(document.getElementById('precoLitro').value) || 0 : 0;
 
             if (idEditando !== null) {
-                const idx = despesas.findIndex(d => d.id === idEditando);
-                if (idx !== -1) despesas[idx] = { id: idEditando, data, categoria, descricao, valor, km, litros, precoLitro };
+                const index = despesas.findIndex(d => d.id === idEditando);
+                if (index !== -1) despesas[index] = { id: idEditando, data, categoria, descricao, valor, km, litros, precoLitro };
                 cancelarEdicao();
             } else {
                 despesas.push({ id: Date.now(), data, categoria, descricao, valor, km, litros, precoLitro });
             }
+
             despesas.sort((a, b) => new Date(b.data) - new Date(a.data));
-            salvarNoLocalStorage(); popularFiltroAnos(); atualizarInterface();
-            document.getElementById('expenseForm').reset(); document.getElementById('data').valueAsDate = new Date(); verificarCategoriaAbastecimento();
+            salvarNoLocalStorage();
+            popularFiltroAnos();
+            atualizarInterface();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('data').valueAsDate = new Date('2026-08-17');
+            verificarCategoriaAbastecimento();
         }
 
         function carregarEdicao(id) {
-            mudarAba('abastecimentos'); const d = getDespesasAtuais().find(x => x.id === id); if (!d) return;
-            document.getElementById('data').value = d.data; document.getElementById('categoria').value = d.categoria; verificarCategoriaAbastecimento();
-            if (d.categoria === 'Abastecimento') { document.getElementById('km').value = d.km || ''; document.getElementById('litros').value = d.litros || ''; document.getElementById('precoLitro').value = d.precoLitro || ''; }
-            document.getElementById('descricao').value = d.descricao; document.getElementById('valor').value = d.valor;
-            idEditando = id; document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-600"></i> Editar';
-            document.getElementById('btnSubmit').innerText = 'Salvar'; document.getElementById('btnCancelarEdicao').classList.remove('hidden');
+            mudarAba('abastecimentos');
+            let despesa = getDespesasAtuais().find(d => d.id === id);
+            if (!despesa) return;
+            document.getElementById('data').value = despesa.data;
+            document.getElementById('categoria').value = despesa.categoria;
+            verificarCategoriaAbastecimento();
+            if (despesa.categoria === 'Abastecimento') {
+                document.getElementById('km').value = despesa.km || '';
+                document.getElementById('litros').value = despesa.litros || '';
+                document.getElementById('precoLitro').value = despesa.precoLitro || '';
+            }
+            document.getElementById('descricao').value = despesa.descricao;
+            document.getElementById('valor').value = despesa.valor;
+            idEditando = id;
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-600"></i> Editar';
+            document.getElementById('btnSubmit').innerText = 'Salvar';
+            document.getElementById('btnCancelarEdicao').classList.remove('hidden');
         }
 
         function cancelarEdicao() {
-            idEditando = null; document.getElementById('expenseForm').reset(); document.getElementById('data').valueAsDate = new Date();
-            verificarCategoriaAbastecimento(); document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa';
-            document.getElementById('btnSubmit').innerText = 'Adicionar'; document.getElementById('btnCancelarEdicao').classList.add('hidden');
+            idEditando = null;
+            document.getElementById('expenseForm').reset();
+            document.getElementById('data').valueAsDate = new Date('2026-08-17');
+            verificarCategoriaAbastecimento();
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus text-blue-600"></i> Nova Despesa';
+            document.getElementById('btnSubmit').innerText = 'Adicionar';
+            document.getElementById('btnCancelarEdicao').classList.add('hidden');
         }
 
         function excluirDespesa(id) {
             if (id === idEditando) cancelarEdicao();
             todasDespesas[veiculoAtivoId] = getDespesasAtuais().filter(d => d.id !== id);
-            salvarNoLocalStorage(); popularFiltroAnos(); atualizarInterface();
+            salvarNoLocalStorage();
+            popularFiltroAnos();
+            atualizarInterface();
         }
 
         function limparDados() {
-            if (confirm("Apagar dados?")) { todasDespesas[veiculoAtivoId] = []; salvarNoLocalStorage(); atualizarInterface(); }
+            if (confirm("Apagar todos os registros deste veículo?")) {
+                todasDespesas[veiculoAtivoId] = [];
+                ['car_next_service_', 'car_next_service_date_', 'car_purchase_date_', 'car_venc_ipva_', 'car_venc_lic_', 'car_venc_seg_', 'car_venc_cnh_andrey_', 'car_venc_cnh_tiago_', 'car_parcelas_ipva_', 'car_parcelas_lic_', 'car_parcelas_seg_', 'car_aq_total_', 'car_aq_entrada_', 'car_aq_data_entrada_', 'car_parcelas_aquisicao_'].forEach(k => localStorage.removeItem(k + veiculoAtivoId));
+                carregarConfiguracoesVeiculo();
+                cancelarEdicao();
+                salvarNoLocalStorage();
+                popularFiltroAnos();
+                atualizarInterface();
+            }
         }
 
         function formatarMoeda(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
         function formatarMoedaInteira(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }); }
-        function formatarData(d) { const [a, m, dt] = d.split('-'); return `${dt}/${m}`; }
+        function formatarData(d) { const [ano, mes, dia] = d.split('-'); return `${dia}/${mes}/${ano}`; }
+
+        function obterEstiloCategoria(cat) {
+            switch(cat) {
+                case 'Abastecimento': return 'bg-blue-100 text-blue-800 border border-blue-300';
+                case 'Aquisição de veículo': return 'bg-indigo-900 text-indigo-100 border border-indigo-700';
+                case 'IPVA': return 'bg-amber-100 text-amber-800 border border-amber-300';
+                case 'Licenciamento': return 'bg-emerald-100 text-emerald-800 border border-emerald-300';
+                case 'Seguro': return 'bg-purple-100 text-purple-800 border border-purple-300';
+                case 'Revisão': return 'bg-red-100 text-red-800 border border-red-300';
+                case 'Multa': return 'bg-pink-100 text-pink-800 border border-pink-300';
+                case 'Acessórios': return 'bg-indigo-100 text-indigo-800 border border-indigo-300';
+                case 'Lavagem': return 'bg-teal-100 text-teal-800 border border-teal-300';
+                case 'Sem Parar': return 'bg-cyan-100 text-cyan-800 border border-cyan-300';
+                default: return 'bg-slate-100 text-slate-700 border border-slate-200';
+            }
+        }
 
         function atualizarInterface() {
             let despesas = getDespesasAtuais();
-            const tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = '';
-            const filtro = document.getElementById('filtroTabela').value;
-            const filtradas = filtro === 'Todas' ? despesas : despesas.filter(d => d.categoria === filtro);
-            document.getElementById('emptyState').classList.toggle('hidden', despesas.length > 0);
+            const tbody = document.getElementById('expenseTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const filtroTabela = document.getElementById('filtroTabela').value;
+            tbody.innerHTML = '';
 
-            let total = 0, maiorKm = 0, gastosAbast = 0, totalLitros = 0, menor = Infinity, maiorAbast = 0;
+            const filtradasTabela = filtroTabela === 'Todas' ? despesas : despesas.filter(d => d.categoria === filtroTabela);
+            emptyState.classList.toggle('hidden', despesas.length > 0);
+
+            let total = 0, maiorKm = 0, gastosAbast = 0, totalLitros = 0, menorKmAbast = Infinity, maiorKmAbast = 0;
             despesas.forEach(d => {
-                total += d.valor; if (d.km > maiorKm) maiorKm = d.km;
-                if (d.categoria === 'Abastecimento') { gastosAbast += d.valor; if (d.litros > 0) totalLitros += d.litros; if (d.km > maiorAbast) maiorAbast = d.km; if (d.km < menor) menor = d.km; }
+                total += d.valor;
+                if (d.km > maiorKm) maiorKm = d.km;
+                if (d.categoria === 'Abastecimento') {
+                    gastosAbast += d.valor;
+                    if (d.litros > 0) totalLitros += d.litros;
+                    if (d.km > maiorKmAbast) maiorKmAbast = d.km;
+                    if (d.km < menorKmAbast) menorKmAbast = d.km;
+                }
             });
-            if (menor === Infinity) menor = 0;
+            if (menorKmAbast === Infinity) menorKmAbast = 0;
 
-            let kmRodados = maiorAbast - menor;
-            let custoKm = kmRodados > 0 && gastosAbast > 0 ? gastosAbast / kmRodados : 0;
-            let kmLitro = kmRodados > 0 && totalLitros > 0 ? kmRodados / totalLitros : (kmRodados > 0 && gastosAbast > 0 ? kmRodados / (gastosAbast / 5.89) : 0);
+            let kmRodados = maiorKmAbast - menorKmAbast;
+            let custoKm = (kmRodados > 0 && gastosAbast > 0) ? (gastosAbast / kmRodados) : 0;
+            let kmLitro = kmRodados > 0 && totalLitros > 0 ? (kmRodados / totalLitros) : (kmRodados > 0 && gastosAbast > 0 ? kmRodados / (gastosAbast / 5.89) : 0);
 
-            filtradas.forEach(d => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="py-1.5 pr-1">${formatarData(d.data)}</td><td class="py-1.5 pr-1 font-semibold">${d.categoria}</td><td class="py-1.5 pr-1 truncate max-w-[100px]">${d.descricao}</td><td class="py-1.5 pr-1 text-right font-bold">${formatarMoeda(d.valor)}</td><td class="py-1.5 text-center whitespace-nowrap"><button onclick="carregarEdicao(${d.id})" class="text-blue-600 p-0.5"><i class="fa-solid fa-pen"></i></button><button onclick="excluirDespesa(${d.id})" class="text-red-500 p-0.5 ml-1"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            filtradasTabela.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                const infoAbast = (d.categoria === 'Abastecimento' && d.litros > 0) ? `<div class="text-[10px] text-slate-400">${d.litros} L • R$ ${(d.precoLitro||0).toFixed(2)}/L</div>` : '';
+                tr.innerHTML = `
+                    <td class="py-2 pr-2 text-slate-600">${formatarData(d.data)}</td>
+                    <td class="py-2 pr-2"><span class="px-2 py-0.5 text-[10px] rounded-full font-medium ${obterEstiloCategoria(d.categoria)}">${d.categoria}</span></td>
+                    <td class="py-2 pr-2 font-medium text-slate-800">${d.descricao}${infoAbast}</td>
+                    <td class="py-2 pr-2 text-slate-600">${d.categoria === 'Abastecimento' && d.km > 0 ? d.km.toLocaleString() + ' km' : '-'}</td>
+                    <td class="py-2 pr-2 text-right font-semibold text-slate-900">${formatarMoeda(d.valor)}</td>
+                    <td class="py-2 text-center whitespace-nowrap">
+                        <button onclick="carregarEdicao(${d.id})" class="text-slate-400 hover:text-blue-600 p-1 mr-0.5"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="excluirDespesa(${d.id})" class="text-slate-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+                tbody.appendChild(tr);
             });
 
             document.getElementById('totalGasto').innerText = formatarMoeda(total);
             document.getElementById('ultimaKm').innerText = `${maiorKm.toLocaleString()} km`;
             document.getElementById('custoPorKm').innerText = formatarMoeda(custoKm);
-            document.getElementById('kmPorLitro').innerText = `${kmLitro.toFixed(1)} km/L`;
+            document.getElementById('kmPorLitro').innerText = `${kmLitro.toFixed(1).replace('.', ',')} km/L`;
 
-            atualizarContadorRevisao(); atualizarResumoAquisicao(); atualizarGraficoCategoria(); atualizarGraficoAquisicaoCard(); atualizarGraficoMensal();
+            atualizarContadorRevisao();
+            atualizarResumoAquisicao();
+            atualizarGraficoCategoria();
+            atualizarGraficoAquisicaoCard();
+            atualizarGraficoMensal();
         }
 
         function obterDespesasPeriodo() {
-            const ano = document.getElementById('filtroAno').value, mes = document.getElementById('filtroMes').value;
-            return getDespesasAtuais().filter(d => {
-                if (!d.data) return false; const [a, m] = d.data.split('-');
-                if (a !== ano) return false; if (mes !== 'Todos' && m !== mes) return false;
+            let despesas = getDespesasAtuais();
+            const ano = document.getElementById('filtroAno').value;
+            const mes = document.getElementById('filtroMes').value;
+            return despesas.filter(d => {
+                if (!d.data) return false;
+                const [a, m] = d.data.split('-');
+                if (a !== ano) return false;
+                if (mes !== 'Todos' && m !== mes) return false;
                 return true;
             });
         }
 
         function atualizarGraficoCategoria() {
             const ctx = document.getElementById('graficoCategorias').getContext('2d');
-            const filtradas = obterDespesasPeriodo(); let labels = [], dados = [], cores = [];
+            const filtradas = obterDespesasPeriodo();
+            let labels = [], dados = [], cores = [];
+
             listaCategorias.forEach((cat, idx) => {
                 if (cat === 'Aquisição de veículo') return;
                 const soma = filtradas.filter(d => d.categoria === cat).reduce((s, i) => s + i.valor, 0);
                 if (s > 0) { labels.push(cat); dados.push(s); cores.push(coresCategorias[idx]); }
             });
-            if (dados.length === 0) { labels = ['Vazio']; dados = [1]; cores = ['#e2e8f0']; }
 
-            const legenda = document.getElementById('legendaLateral'); legenda.innerHTML = '';
+            if (dados.length === 0) { labels = ['Sem registros']; dados = [1]; cores = ['#e2e8f0']; }
+
+            const legenda = document.getElementById('legendaLateral');
+            legenda.innerHTML = '';
             listaCategorias.forEach((cat, idx) => {
                 if (cat === 'Aquisição de veículo') return;
-                legenda.innerHTML += `<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${coresCategorias[idx]};"></span><span class="truncate">${cat}</span></div>`;
+                legenda.innerHTML += `<div class="flex items-center gap-1.5 py-0.5 border-b border-slate-100"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${coresCategorias[idx]};"></span><span class="text-slate-700 truncate">${cat}</span></div>`;
             });
 
             if (meuGrafico) meuGrafico.destroy();
             meuGrafico = new Chart(ctx, {
-                type: 'doughnut', data: { labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 1 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } },
+                type: 'doughnut',
+                data: { labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 1, borderColor: '#ffffff' }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#1e293b', font: { weight: 'bold', size: 9 },
+                            formatter: (v, ctx) => (v / ctx.dataset.data.reduce((a,b)=>a+b,0) < 0.05 || labels[0] === 'Sem registros') ? '' : formatarMoedaInteira(v)
+                        },
+                        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${formatarMoedaInteira(ctx.raw)}` } }
+                    }
+                },
                 plugins: [ChartDataLabels]
             });
         }
@@ -848,34 +1380,73 @@
             const totalV = parseFloat(localStorage.getItem(`car_aq_total_${veiculoAtivoId}`)) || 0;
             const entrada = parseFloat(localStorage.getItem(`car_aq_entrada_${veiculoAtivoId}`)) || 0;
             let pagas = obterParcelasAquisicaoAtuais().filter(p => p.pago).reduce((s, p) => s + p.valor, 0);
-            let pago = entrada + pagas, restante = totalV > pago ? totalV - pago : 0;
-            document.getElementById('legendaAquisicaoCard').innerHTML = `<div class="flex justify-between"><span>Pago: <strong>${formatarMoeda(pago)}</strong></span><span>Restante: <strong>${formatarMoeda(restante)}</strong></span></div>`;
+            let pago = entrada + pagas;
+            let restante = totalV > pago ? totalV - pago : 0;
+
+            let labels = ['Total Pago', 'Restante'];
+            let dados = [pago, restante];
+            let cores = ['#059669', '#cbd5e1'];
+            if (totalV === 0 && pago === 0) { labels = ['Não configurado']; dados = [1]; cores = ['#e2e8f0']; }
+
+            document.getElementById('legendaAquisicaoCard').innerHTML = `
+                <div class="flex items-center justify-between py-0.5 border-b border-slate-100"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span>Pago</span></div><span class="font-bold">${formatarMoeda(pago)}</span></div>
+                <div class="flex items-center justify-between py-0.5"><div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span><span>Restante</span></div><span class="font-bold">${formatarMoeda(restante)}</span></div>`;
 
             if (meuGraficoAquisicaoCard) meuGraficoAquisicaoCard.destroy();
             meuGraficoAquisicaoCard = new Chart(ctx, {
-                type: 'doughnut', data: { labels: ['Pago', 'Restante'], datasets: [{ data: [pago, restante], backgroundColor: ['#059669', '#cbd5e1'], borderWidth: 1 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } } },
+                type: 'doughnut',
+                data: { labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 1, borderColor: '#ffffff' }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { color: '#1e293b', font: { weight: 'bold', size: 9 }, formatter: (v, ctx) => v / ctx.dataset.data.reduce((a,b)=>a+b,0) < 0.05 ? '' : formatarMoedaInteira(v) },
+                        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${formatarMoedaInteira(ctx.raw)}` } }
+                    }
+                },
                 plugins: [ChartDataLabels]
             });
         }
 
         function atualizarGraficoMensal() {
+            let despesas = getDespesasAtuais();
             const ctx = document.getElementById('graficoMensal').getContext('2d');
-            const ano = document.getElementById('filtroAno').value, mes = document.getElementById('filtroMes').value;
+            const ano = document.getElementById('filtroAno').value;
+            const mes = document.getElementById('filtroMes').value;
             let gastos = new Array(12).fill(0);
-            getDespesasAtuais().forEach(d => { if (d.data) { const [a, m] = d.data.split('-'); if (a === ano) { const idx = parseInt(m) - 1; if (idx >= 0 && idx < 12) gastos[idx] += d.valor; } } });
+
+            despesas.forEach(d => {
+                if (d.data) {
+                    const [a, m] = d.data.split('-');
+                    if (a === ano) { const idx = parseInt(m) - 1; if (idx >= 0 && idx < 12) gastos[idx] += d.valor; }
+                }
+            });
+
             let labels = nomesMeses, dados = gastos;
             if (mes !== 'Todos') { const idx = parseInt(mes) - 1; labels = [nomesMeses[idx]]; dados = [gastos[idx]]; }
 
             if (meuGraficoMensal) meuGraficoMensal.destroy();
             meuGraficoMensal = new Chart(ctx, {
-                type: 'bar', data: { labels, datasets: [{ data: dados, backgroundColor: '#2563eb', borderRadius: 3 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { y: { display: false }, x: { ticks: { font: { size: 9 } } } } },
+                type: 'bar',
+                data: { labels, datasets: [{ data: dados, backgroundColor: '#2563eb', borderRadius: 4 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { color: '#1e293b', font: { weight: 'bold', size: 9 }, anchor: 'end', align: 'top', formatter: v => v === 0 ? '' : formatarMoedaInteira(v) },
+                        tooltip: { callbacks: { label: ctx => ` Gasto: ${formatarMoedaInteira(ctx.raw)}` } }
+                    },
+                    scales: { y: { beginAtZero: true, grid: { display: false }, ticks: { font: { size: 9 } } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } }
+                },
                 plugins: [ChartDataLabels]
             });
         }
 
-        popularSeletorVeiculos(); carregarConfiguracoesVeiculo(); popularFiltroAnos(); verificarCategoriaAbastecimento(); atualizarInterface();
+        popularSeletorVeiculos();
+        carregarConfiguracoesVeiculo();
+        popularFiltroAnos();
+        verificarCategoriaAbastecimento();
+        atualizarInterface();
     </script>
 </body>
 </html>
